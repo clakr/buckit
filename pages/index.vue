@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { definePageMeta } from "#imports";
-
 definePageMeta({
   middleware: "auth",
   auth: {
     guestRedirectUrl: "/login",
   },
+  layout: "auth",
 });
 </script>
 
 <template>
-  <h1 class="font-sans">this is sans</h1>
-  <h2 class="font-serif">this is serif</h2>
-  <UserButton />
+  <main class="mx-auto max-w-screen-lg px-3 py-6">
+    <h1>this is index</h1>
+  </main>
 </template>
