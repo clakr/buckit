@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@clerk/backend": "^1.15.2",
+    "@nuxtjs/tailwindcss": "^6.12.2",
     "nuxt": "^3.13.2",
     "vue": "latest",
     "vue-clerk": "^0.7.1",

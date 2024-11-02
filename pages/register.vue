@@ -11,5 +11,7 @@ definePageMeta({
 </script>
 
 <template>
-  <SignUp />
+  <main class="min-h-svh grid place-content-center">
+    <SignUp />
+  </main>
 </template>

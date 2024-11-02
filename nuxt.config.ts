@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-  modules: ["vue-clerk/nuxt"],
+  modules: ["vue-clerk/nuxt", "@nuxtjs/tailwindcss"],
   imports: {
     autoImport: false,
   },
