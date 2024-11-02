@@ -10,6 +10,7 @@ definePageMeta({
 </script>
 
 <template>
-  <h1>you're signed in!</h1>
+  <h1 class="font-sans">this is sans</h1>
+  <h2 class="font-serif">this is serif</h2>
   <UserButton />
 </template>

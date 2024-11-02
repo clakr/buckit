@@ -2,11 +2,12 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-  modules: ["vue-clerk/nuxt", "@nuxtjs/tailwindcss"],
+  modules: ["vue-clerk/nuxt", "@nuxtjs/tailwindcss", "@nuxt/fonts"],
   imports: {
     autoImport: false,
   },
   clerk: {
     afterSignOutUrl: "/login",
   },
+  tailwindcss: {},
 });

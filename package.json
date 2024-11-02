@@ -16,5 +16,8 @@
     "vue": "latest",
     "vue-clerk": "^0.7.1",
     "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@nuxt/fonts": "^0.10.2"
   }
 }
