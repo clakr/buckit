@@ -7,8 +7,16 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@nuxt/fonts",
     "@nuxt/eslint",
+    "shadcn-nuxt",
   ],
   clerk: {
     afterSignOutUrl: "/login",
+  },
+  runtimeConfig: {
+    databaseUrl: "",
+  },
+  shadcn: {
+    prefix: "",
+    componentDir: "./components/ui",
   },
 });

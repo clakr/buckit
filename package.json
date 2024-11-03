@@ -8,14 +8,18 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint .",
+    "lint": "eslint . && tsc --noEmit",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
   "dependencies": {
     "@clerk/backend": "^1.15.2",
+    "@neondatabase/serverless": "^0.10.1",
     "@nuxtjs/tailwindcss": "^6.12.2",
+    "@radix-icons/vue": "^1.0.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "drizzle-orm": "^0.36.0",
     "nuxt": "^3.13.2",
     "vue": "latest",
     "vue-clerk": "^0.7.1",
@@ -24,7 +28,13 @@
   "devDependencies": {
     "@nuxt/eslint": "^0.6.1",
     "@nuxt/fonts": "^0.10.2",
+    "clsx": "^2.1.1",
+    "drizzle-kit": "^0.27.1",
     "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.6.8"
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "shadcn-nuxt": "^0.10.4",
+    "tailwind-merge": "^2.5.4",
+    "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.19.2"
   }
 }
