@@ -2,7 +2,7 @@
 
 <template>
   <nav class="border-b">
-    <div class="flex items-center justify-between max-w-screen-lg mx-auto p-3">
+    <div class="mx-auto flex max-w-screen-lg items-center justify-between p-3">
       <NuxtLink to="/">Home</NuxtLink>
       <UserButton />
     </div>
