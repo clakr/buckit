@@ -1,5 +1,5 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider afterSignOutUrl='/'>
+    <ClerkProvider afterSignOutUrl="/">
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "check": "bun lint && bun format"
   },
   "dependencies": {
     "@clerk/nextjs": "6.5.1",
