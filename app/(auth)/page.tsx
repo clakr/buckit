@@ -1,5 +1,3 @@
-import { db } from "../database";
-import { SelectTransaction } from "../database/schema";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,6 +26,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { db } from "@/database";
+import { SelectTransaction } from "@/database/schema";
 import { cn, currencyFormatter } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 import {

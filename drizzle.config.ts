@@ -5,8 +5,8 @@ if (!databaseUrl) throw new Error("no database url found in the .env");
 
 export default defineConfig({
   dialect: "postgresql",
-  schema: "./app/database/schema.ts",
-  out: "./app/database/.drizzle",
+  schema: "./database/schema.ts",
+  out: "./database/.drizzle",
   dbCredentials: {
     url: databaseUrl,
   },

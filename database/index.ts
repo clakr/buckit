@@ -1,4 +1,4 @@
-import * as schema from "./schema";
+import * as schema from "@/database/schema";
 import { drizzle } from "drizzle-orm/neon-http";
 
 const databaseUrl = process.env.DATABASE_URL;
