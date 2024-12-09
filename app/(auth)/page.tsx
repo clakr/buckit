@@ -1,5 +1,6 @@
 import { db } from "../database";
 import { SelectTransaction } from "../database/schema";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -8,6 +9,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
   Table,
   TableBody,
   TableCell,
@@ -15,9 +27,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import { cn, currencyFormatter } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
-import { CircleEqualIcon, CircleMinusIcon, CirclePlusIcon } from "lucide-react";
+import {
+  CircleEqualIcon,
+  CircleMinusIcon,
+  CirclePlusIcon,
+  PlusIcon,
+} from "lucide-react";
 
 async function fetchBuckets() {
   const { userId } = await auth();
@@ -85,6 +103,37 @@ export default async function Page() {
               </CardFooter>
             </Card>
           ))}
+          <Dialog>
+            <DialogTrigger className="grid place-content-center rounded-xl border bg-card text-card-foreground shadow">
+              <span className="sr-only">Open Create Bucket Dialog</span>
+              <PlusIcon className="size-20" />
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create Bucket</DialogTitle>
+                <DialogDescription>
+                  Input the bucket details below to create a bucket
+                </DialogDescription>
+              </DialogHeader>
+              <form className="grid gap-y-4">
+                <div className="grid gap-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input type="text" name="name" id="name" />
+                </div>
+                <div className="grid gap-y-2">
+                  <Label htmlFor="totalAmount">Total Amount</Label>
+                  <Input type="number" name="totalAmount" id="totalAmount" />
+                </div>
+                <div className="grid gap-y-2">
+                  <Label htmlFor="description">Description (optional)</Label>
+                  <Textarea name="description" id="description" rows={5} />
+                </div>
+              </form>
+              <DialogFooter>
+                <Button>Create</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
       <section className="grid gap-y-2">
