@@ -39,7 +39,9 @@ export const transactionEnum = pgEnum("type", [
 
 export const transaction = pgTable("transactions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  bucketId: integer("bucket_id").references(() => bucket.id),
+  bucketId: integer("bucket_id")
+    .references(() => bucket.id)
+    .notNull(),
   description: text().notNull(),
   amount: decimal({ precision: 12, scale: 2 }).notNull(),
   type: transactionEnum().notNull(),

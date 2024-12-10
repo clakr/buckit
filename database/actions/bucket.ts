@@ -10,6 +10,7 @@ export async function fetchBucketsByUserId() {
 
   const buckets = await db.query.bucket.findMany({
     where: (bucket, { eq }) => eq(bucket.userId, userId),
+    orderBy: (bucket, { desc }) => desc(bucket.updatedAt),
     with: {
       transactions: true,
     },

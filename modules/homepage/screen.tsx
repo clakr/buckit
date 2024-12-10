@@ -17,8 +17,15 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Table,
   TableBody,
@@ -32,12 +39,15 @@ import {
   createBucketByUserId,
   fetchBucketsByUserId,
 } from "@/database/actions/bucket";
+import { createBucketTransaction } from "@/database/actions/transaction";
 import { SelectTransaction } from "@/database/schema";
 import { cn, currencyFormatter } from "@/lib/utils";
 import {
   CircleEqualIcon,
   CircleMinusIcon,
   CirclePlusIcon,
+  EllipsisVertical,
+  FilePlus,
   PlusIcon,
 } from "lucide-react";
 import { useActionState, useState } from "react";
@@ -73,27 +83,26 @@ export default function Screen({
 }: {
   data: Awaited<ReturnType<typeof fetchBucketsByUserId>>;
 }) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCreateBucketDialogOpen, setIsCreateBucketDialogOpen] =
+    useState(false);
 
   const [buckets, createBucketFormAction] = useActionState<
     ReturnType<typeof fetchBucketsByUserId>,
     FormData
   >(async (initialState, formData) => {
-    const bucketData = {
+    const newBucket = await createBucketByUserId({
       name: formData.get("name")?.toString() ?? "",
       description: formData.get("description")?.toString() ?? "",
       totalAmount: formData.get("totalAmount")?.toString() ?? "0",
-    };
+    });
 
-    const newBucket = await createBucketByUserId(bucketData);
-
-    setIsDialogOpen(false);
+    setIsCreateBucketDialogOpen(false);
 
     return [...initialState, newBucket];
   }, data);
 
   // GET BUCKETS' TRANSACTIONS
-  const transactions = buckets
+  const initialTransactions = buckets
     .flatMap((bucket) =>
       bucket.transactions.map((transaction) => ({
         ...transaction,
@@ -102,13 +111,105 @@ export default function Screen({
     )
     .toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
+  const [transactions, createTransactionFormAction] = useActionState<
+    typeof initialTransactions,
+    FormData
+  >(async (initialState, formData) => {
+    const newTransaction = await createBucketTransaction({
+      bucketId: +(formData.get("bucketId")?.toString() ?? "0"),
+      description: formData.get("description")?.toString() ?? "",
+      amount: formData.get("amount")?.toString() ?? "0",
+      type: formData.get("type")?.toString() as SelectTransaction["type"],
+    });
+
+    const sortedData = [
+      ...initialState,
+      {
+        ...newTransaction,
+        bucket: { name: formData.get("bucketName")?.toString() ?? "" },
+      },
+    ].toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    return sortedData;
+  }, initialTransactions);
+
   return (
     <main className="mx-auto grid max-w-screen-xl gap-y-4 p-6">
       <section className="grid gap-y-2">
         <h1 className="font-bold">Buckets</h1>
         <div className="grid auto-rows-fr grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
           {buckets.map((bucket) => (
-            <Card key={bucket.id} className="flex flex-col justify-between">
+            <Card
+              key={bucket.id}
+              className="relative flex flex-col justify-between"
+            >
+              <Dialog>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="absolute right-2 top-2 after:absolute after:left-1/2 after:top-1/2 after:size-12 after:-translate-x-1/2 after:-translate-y-1/2">
+                    <span className="sr-only">Open Bucket Dropdown Menu</span>
+                    <EllipsisVertical className="size-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DialogTrigger asChild>
+                      <DropdownMenuItem>
+                        <FilePlus />
+                        Create Transaction
+                      </DropdownMenuItem>
+                    </DialogTrigger>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create Transaction</DialogTitle>
+                    <DialogDescription>
+                      Input the transaction details below to create a new
+                      transaction for this bucket
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form
+                    id="form"
+                    className="grid gap-y-4"
+                    action={createTransactionFormAction}
+                  >
+                    <input
+                      type="hidden"
+                      name="bucketId"
+                      defaultValue={bucket.id}
+                    />
+                    <input
+                      type="hidden"
+                      name="bucketName"
+                      defaultValue={bucket.name}
+                    />
+                    <div className="grid gap-y-2">
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea name="description" id="description" rows={3} />
+                    </div>
+                    <div className="grid gap-y-2">
+                      <Label htmlFor="amount">Amount</Label>
+                      <Input type="number" name="amount" id="amount" />
+                    </div>
+                    <div className="grid gap-y-2">
+                      <Label>Type</Label>
+                      <RadioGroup defaultValue="inbound" name="type">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="inbound" id="inbound" />
+                          <Label htmlFor="inbound">Inbound</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="outbound" id="outbound" />
+                          <Label htmlFor="outbound">Outbound</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </form>
+                  <DialogFooter>
+                    <Button type="submit" form="form">
+                      Create
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
               <CardHeader>
                 <CardTitle className="uppercase">{bucket.name}</CardTitle>
                 <CardDescription>{bucket.description}</CardDescription>
@@ -118,7 +219,10 @@ export default function Screen({
               </CardFooter>
             </Card>
           ))}
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog
+            open={isCreateBucketDialogOpen}
+            onOpenChange={setIsCreateBucketDialogOpen}
+          >
             <DialogTrigger className="grid place-content-center rounded-xl border bg-card text-card-foreground shadow">
               <span className="sr-only">Open Create Bucket Dialog</span>
               <PlusIcon className="size-20" />
