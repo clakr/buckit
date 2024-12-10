@@ -60,7 +60,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border selection:bg-primary selection:text-primary-foreground;
   }
   body {
     @apply bg-background text-foreground;

@@ -139,12 +139,8 @@
           "name": "transactions_bucket_id_buckets_id_fk",
           "tableFrom": "transactions",
           "tableTo": "buckets",
-          "columnsFrom": [
-            "bucket_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["bucket_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -160,11 +156,7 @@
     "public.type": {
       "name": "type",
       "schema": "public",
-      "values": [
-        "default",
-        "inbound",
-        "outbound"
-      ]
+      "values": ["default", "inbound", "outbound"]
     }
   },
   "schemas": {},

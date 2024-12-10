@@ -29,6 +29,8 @@ export const bucketRelations = relations(bucket, ({ many }) => ({
   transactions: many(transaction),
 }));
 
+export type InsertBucket = typeof bucket.$inferInsert;
+
 export const transactionEnum = pgEnum("type", [
   "default",
   "inbound",
@@ -38,13 +40,14 @@ export const transactionEnum = pgEnum("type", [
 export const transaction = pgTable("transactions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   bucketId: integer("bucket_id").references(() => bucket.id),
-  description: text(),
+  description: text().notNull(),
   amount: decimal({ precision: 12, scale: 2 }).notNull(),
-  type: transactionEnum(),
+  type: transactionEnum().notNull(),
   ...timestamps,
 });
 
 export type SelectTransaction = typeof transaction.$inferSelect;
+export type InsertTransaction = typeof transaction.$inferInsert;
 
 export const transactionRelations = relations(transaction, ({ one }) => ({
   bucket: one(bucket, {
