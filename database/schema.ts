@@ -30,6 +30,7 @@ export const bucketRelations = relations(bucket, ({ many }) => ({
   transactions: many(transaction),
 }));
 
+export type SelectBucket = typeof bucket.$inferSelect;
 export type InsertBucket = typeof bucket.$inferInsert;
 
 export const transactionEnum = pgEnum("type", [
