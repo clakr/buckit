@@ -10,7 +10,6 @@ export async function fetchBucketsByUserId() {
 
   const buckets = await db.query.bucket.findMany({
     where: (bucket, { eq }) => eq(bucket.userId, userId),
-    orderBy: (bucket, { desc }) => desc(bucket.updatedAt),
     with: {
       transactions: true,
     },
@@ -19,18 +18,21 @@ export async function fetchBucketsByUserId() {
   return buckets;
 }
 
-export async function createBucketByUserId(
-  bucketData: Omit<InsertBucket, "userId">,
-) {
+export async function createBucket(bucketData: Omit<InsertBucket, "userId">) {
   const { userId } = await auth();
   if (!userId) throw new Error("no userId");
 
   const [newBucket] = await db
     .insert(bucket)
-    .values({ ...bucketData, userId })
+    .values({
+      userId,
+      name: bucketData.name,
+      description: bucketData.description,
+      totalAmount: bucketData.totalAmount,
+    })
     .returning();
 
-  const transactions = [];
+  const bucketTransactions = [];
 
   if (+bucketData.totalAmount !== 0) {
     const [newTransaction] = await db
@@ -38,13 +40,13 @@ export async function createBucketByUserId(
       .values({
         bucketId: newBucket.id,
         description: "Initial Bucket Value",
-        amount: newBucket.totalAmount,
+        amount: bucketData.totalAmount,
         type: "default",
       })
       .returning();
 
-    transactions.push(newTransaction);
+    bucketTransactions.push(newTransaction);
   }
 
-  return { ...newBucket, transactions };
+  return { ...newBucket, transactions: bucketTransactions };
 }

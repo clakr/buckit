@@ -1,5 +1,5 @@
 {
-  "id": "e097dfb8-aac4-4068-b04c-a1a5c1435736",
+  "id": "05cc3934-68ab-4afe-a00f-46f6e1e7cf55",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -60,7 +60,7 @@
           "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -97,13 +97,13 @@
           "name": "bucket_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "amount": {
           "name": "amount",
@@ -116,7 +116,7 @@
           "type": "type",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -129,7 +129,7 @@
           "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -139,8 +139,12 @@
           "name": "transactions_bucket_id_buckets_id_fk",
           "tableFrom": "transactions",
           "tableTo": "buckets",
-          "columnsFrom": ["bucket_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "bucket_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -156,7 +160,11 @@
     "public.type": {
       "name": "type",
       "schema": "public",
-      "values": ["default", "inbound", "outbound"]
+      "values": [
+        "default",
+        "inbound",
+        "outbound"
+      ]
     }
   },
   "schemas": {},

@@ -35,11 +35,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  createBucketByUserId,
-  fetchBucketsByUserId,
-} from "@/database/actions/bucket";
-import { createBucketTransaction } from "@/database/actions/transaction";
+import { createBucket, fetchBucketsByUserId } from "@/database/actions/bucket";
+import { createTransaction } from "@/database/actions/transaction";
 import { SelectTransaction } from "@/database/schema";
 import { cn, currencyFormatter } from "@/lib/utils";
 import {
@@ -50,7 +47,7 @@ import {
   FilePlus,
   PlusIcon,
 } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 
 function getTransactionTypeIcon(type: SelectTransaction["type"]) {
   switch (type) {
@@ -83,26 +80,43 @@ export default function Screen({
 }: {
   data: Awaited<ReturnType<typeof fetchBucketsByUserId>>;
 }) {
-  const [isCreateBucketDialogOpen, setIsCreateBucketDialogOpen] =
-    useState(false);
-
-  const [buckets, createBucketFormAction] = useActionState<
+  const [buckets, formAction] = useActionState<
     ReturnType<typeof fetchBucketsByUserId>,
     FormData
   >(async (initialState, formData) => {
-    const newBucket = await createBucketByUserId({
-      name: formData.get("name")?.toString() ?? "",
-      description: formData.get("description")?.toString() ?? "",
-      totalAmount: formData.get("totalAmount")?.toString() ?? "0",
-    });
+    const data = Object.fromEntries(formData);
 
-    setIsCreateBucketDialogOpen(false);
+    if (data.form === "createBucketForm") {
+      const newBucket = await createBucket({
+        name: data.name.toString() ?? "",
+        description: data.description.toString() ?? "",
+        totalAmount: data.totalAmount.toString() ?? "0",
+      });
 
-    return [...initialState, newBucket];
+      return [...initialState, newBucket];
+    } else if (data.form === "createTransactionForm") {
+      // const newTransaction  = await createTransaction()
+      const { bucket, transaction } = await createTransaction({
+        bucketId: parseInt(data.bucketId.toString() ?? "0"),
+        description: data.description.toString() ?? "",
+        amount: data.amount.toString() ?? "",
+        type: data.type as SelectTransaction["type"],
+      });
+
+      const bucketIndex = initialState.findIndex((b) => bucket.id === b.id);
+      const bucketTransactions = initialState[bucketIndex].transactions;
+
+      return initialState.with(bucketIndex, {
+        ...bucket,
+        transactions: [...bucketTransactions, transaction],
+      });
+    }
+
+    return initialState;
   }, data);
 
   // GET BUCKETS' TRANSACTIONS
-  const initialTransactions = buckets
+  const transactions = buckets
     .flatMap((bucket) =>
       bucket.transactions.map((transaction) => ({
         ...transaction,
@@ -111,34 +125,16 @@ export default function Screen({
     )
     .toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-  const [transactions, createTransactionFormAction] = useActionState<
-    typeof initialTransactions,
-    FormData
-  >(async (initialState, formData) => {
-    const newTransaction = await createBucketTransaction({
-      bucketId: +(formData.get("bucketId")?.toString() ?? "0"),
-      description: formData.get("description")?.toString() ?? "",
-      amount: formData.get("amount")?.toString() ?? "0",
-      type: formData.get("type")?.toString() as SelectTransaction["type"],
-    });
-
-    const sortedData = [
-      ...initialState,
-      {
-        ...newTransaction,
-        bucket: { name: formData.get("bucketName")?.toString() ?? "" },
-      },
-    ].toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-    return sortedData;
-  }, initialTransactions);
+  const sortedBuckets = buckets.toSorted(
+    (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
+  );
 
   return (
     <main className="mx-auto grid max-w-screen-xl gap-y-4 p-6">
       <section className="grid gap-y-2">
         <h1 className="font-bold">Buckets</h1>
         <div className="grid auto-rows-fr grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
-          {buckets.map((bucket) => (
+          {sortedBuckets.map((bucket) => (
             <Card
               key={bucket.id}
               className="relative flex flex-col justify-between"
@@ -167,20 +163,16 @@ export default function Screen({
                     </DialogDescription>
                   </DialogHeader>
                   <form
-                    id="form"
+                    id="createTransactionForm"
                     className="grid gap-y-4"
-                    action={createTransactionFormAction}
+                    action={formAction}
                   >
                     <input
                       type="hidden"
-                      name="bucketId"
-                      defaultValue={bucket.id}
+                      name="form"
+                      value="createTransactionForm"
                     />
-                    <input
-                      type="hidden"
-                      name="bucketName"
-                      defaultValue={bucket.name}
-                    />
+                    <input type="hidden" name="bucketId" value={bucket.id} />
                     <div className="grid gap-y-2">
                       <Label htmlFor="description">Description</Label>
                       <Textarea name="description" id="description" rows={3} />
@@ -209,7 +201,7 @@ export default function Screen({
                     </div>
                   </form>
                   <DialogFooter>
-                    <Button type="submit" form="form">
+                    <Button type="submit" form="createTransactionForm">
                       Create
                     </Button>
                   </DialogFooter>
@@ -224,10 +216,7 @@ export default function Screen({
               </CardFooter>
             </Card>
           ))}
-          <Dialog
-            open={isCreateBucketDialogOpen}
-            onOpenChange={setIsCreateBucketDialogOpen}
-          >
+          <Dialog>
             <DialogTrigger className="grid place-content-center rounded-xl border bg-card text-card-foreground shadow">
               <span className="sr-only">Open Create Bucket Dialog</span>
               <PlusIcon className="size-20" />
@@ -240,10 +229,11 @@ export default function Screen({
                 </DialogDescription>
               </DialogHeader>
               <form
-                id="form"
+                id="createBucketForm"
                 className="grid gap-y-4"
-                action={createBucketFormAction}
+                action={formAction}
               >
+                <input type="hidden" name="form" value="createBucketForm" />
                 <div className="grid gap-y-2">
                   <Label htmlFor="name">Name</Label>
                   <Input type="text" name="name" id="name" />
@@ -258,7 +248,7 @@ export default function Screen({
                 </div>
               </form>
               <DialogFooter>
-                <Button type="submit" form="form">
+                <Button type="submit" form="createBucketForm">
                   Create
                 </Button>
               </DialogFooter>
