@@ -187,7 +187,12 @@ export default function Screen({
                     </div>
                     <div className="grid gap-y-2">
                       <Label htmlFor="amount">Amount</Label>
-                      <Input type="number" name="amount" id="amount" />
+                      <Input
+                        type="number"
+                        name="amount"
+                        id="amount"
+                        step={0.01}
+                      />
                     </div>
                     <div className="grid gap-y-2">
                       <Label>Type</Label>
