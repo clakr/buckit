@@ -55,6 +55,7 @@ export default function TransactionsTable({ data }: Props) {
           <TableHead></TableHead>
           <TableHead>Description</TableHead>
           <TableHead>Amount</TableHead>
+          <TableHead>Balance</TableHead>
           <TableHead>Bucket</TableHead>
           <TableHead>Created</TableHead>
         </TableRow>
@@ -74,6 +75,9 @@ export default function TransactionsTable({ data }: Props) {
             <TableCell>{transaction.description}</TableCell>
             <TableCell className="font-medium text-[color:var(--text-color)]">
               {currencyFormatter.format(+transaction.amount)}
+            </TableCell>
+            <TableCell className="font-medium">
+              {currencyFormatter.format(+transaction.runningBalance)}
             </TableCell>
             <TableCell className="font-bold">
               {transaction.bucket.name}

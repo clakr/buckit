@@ -34,19 +34,11 @@ export async function createBucketTransaction(
   return newTransaction;
 }
 
-export async function createTransaction(transactionData: InsertTransaction) {
+export async function createTransaction(
+  transactionData: Omit<InsertTransaction, "runningBalance">,
+) {
   if (transactionData.type === "default")
     throw new Error("invalid transaction type");
-
-  const [newTransaction] = await db
-    .insert(transaction)
-    .values({
-      bucketId: transactionData.bucketId,
-      description: transactionData.description,
-      amount: transactionData.amount,
-      type: transactionData.type,
-    })
-    .returning();
 
   const [updatedBucket] = await db
     .update(bucket)
@@ -57,6 +49,17 @@ export async function createTransaction(transactionData: InsertTransaction) {
           : sql`${bucket.totalAmount} - ${transactionData.amount}`,
     })
     .where(eq(bucket.id, transactionData.bucketId))
+    .returning();
+
+  const [newTransaction] = await db
+    .insert(transaction)
+    .values({
+      bucketId: transactionData.bucketId,
+      description: transactionData.description,
+      amount: transactionData.amount,
+      type: transactionData.type,
+      runningBalance: updatedBucket.totalAmount,
+    })
     .returning();
 
   return { bucket: updatedBucket, transaction: newTransaction };

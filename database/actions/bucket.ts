@@ -40,8 +40,9 @@ export async function createBucket(bucketData: Omit<InsertBucket, "userId">) {
       .values({
         bucketId: newBucket.id,
         description: "Initial Bucket Value",
-        amount: bucketData.totalAmount,
         type: "default",
+        amount: bucketData.totalAmount,
+        runningBalance: bucketData.totalAmount,
       })
       .returning();
 

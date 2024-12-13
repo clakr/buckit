@@ -45,8 +45,12 @@ export const transaction = pgTable("transactions", {
     .references(() => bucket.id)
     .notNull(),
   description: text().notNull(),
-  amount: decimal({ precision: 12, scale: 2 }).notNull(),
   type: transactionEnum().notNull(),
+  amount: decimal({ precision: 12, scale: 2 }).notNull(),
+  runningBalance: decimal("running_balance", {
+    precision: 12,
+    scale: 2,
+  }).notNull(),
   ...timestamps,
 });
 

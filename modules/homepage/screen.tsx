@@ -31,8 +31,8 @@ export default function Screen({
       const { bucket, transaction } = await createTransaction({
         bucketId: parseInt(data.bucketId.toString() ?? "0"),
         description: data.description.toString() ?? "",
-        amount: data.amount.toString() ?? "",
         type: data.type as SelectTransaction["type"],
+        amount: data.amount.toString() ?? "",
       });
 
       const bucketIndex = initialState.findIndex((b) => bucket.id === b.id);
