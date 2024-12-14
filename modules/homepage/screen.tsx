@@ -43,6 +43,32 @@ export default function Screen({
         ...bucket,
         transactions: [...bucketTransactions, transaction],
       });
+    } else if (data.form === "partialTransactionsForm") {
+      // first method
+      const parsedTransactions = JSON.parse(
+        data.transactions.toString(),
+      ) as Array<{
+        bucketId: number;
+        description: string;
+        amount: string;
+        type: "inbound";
+      }>;
+
+      const createdTransactions = await Promise.all(
+        parsedTransactions.map(
+          async (transaction) => await createTransaction({ ...transaction }),
+        ),
+      );
+
+      return createdTransactions.reduce((previous, { bucket, transaction }) => {
+        const bucketIndex = initialState.findIndex((b) => bucket.id === b.id);
+        const bucketTransactions = initialState[bucketIndex].transactions;
+
+        return previous.with(bucketIndex, {
+          ...bucket,
+          transactions: [...bucketTransactions, transaction],
+        });
+      }, initialState);
     }
 
     return initialState;

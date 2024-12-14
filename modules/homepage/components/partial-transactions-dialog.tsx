@@ -15,11 +15,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { fetchBucketsByUserId } from "@/database/actions/bucket";
+import { InsertTransaction } from "@/database/schema";
 import { PlusCircle, Trash } from "lucide-react";
 import { Fragment, useState } from "react";
 
-type Partial = { bucketId?: string; type?: string; value: string };
+type Partial = {
+  bucketId: string;
+  type: "flat" | "percentage";
+  value: string;
+  description: string;
+};
 type Form = {
   baseAmount: string;
   partials: Partial[];
@@ -33,14 +40,38 @@ export default function PartialTransactionsDialog({ data }: Props) {
   const formAction = useFormAction();
   const [form, setForm] = useState<Form>({
     baseAmount: "",
-    partials: [{ value: "0" }],
+    partials: [
+      {
+        bucketId: "",
+        type: "flat",
+        value: "0",
+        description: "",
+      },
+    ],
   });
 
-  function handleSubmit(formData: FormData) {
+  function handleSubmit() {
     const closeButtonElement = document.querySelector(
       "button[data-button=close]",
     ) as HTMLButtonElement;
     closeButtonElement.click();
+
+    const transactions: Omit<InsertTransaction, "runningBalance">[] =
+      form.partials.map((partial) => {
+        return {
+          bucketId: +partial.bucketId,
+          description: partial.description,
+          amount:
+            partial.type === "flat"
+              ? parseFloat(partial.value).toFixed(2)
+              : ((+partial.value / 100) * +form.baseAmount).toFixed(2),
+          type: "inbound",
+        };
+      });
+
+    const formData = new FormData();
+    formData.append("form", "partialTransactionsForm");
+    formData.append("transactions", JSON.stringify(transactions));
 
     formAction(formData);
   }
@@ -65,7 +96,18 @@ export default function PartialTransactionsDialog({ data }: Props) {
   }
 
   function handleAddPartial() {
-    setForm({ ...form, partials: [...form.partials, { value: "0" }] });
+    setForm({
+      ...form,
+      partials: [
+        ...form.partials,
+        {
+          bucketId: "",
+          type: "flat",
+          value: "0",
+          description: "",
+        },
+      ],
+    });
   }
 
   function handleRemovePartial(index: number) {
@@ -107,13 +149,13 @@ export default function PartialTransactionsDialog({ data }: Props) {
             }
           />
         </div>
-        <div className="grid gap-y-2">
+        <div className="grid gap-y-1.5">
           <Label>Partials</Label>
-          <div className="grid gap-y-2">
+          <div className="grid gap-y-3">
             {form.partials.map((_, index) => (
               <div
                 key={index}
-                className="grid grid-cols-[max(125px)_max(125px)_1fr_36px] gap-x-2"
+                className="grid grid-cols-[max(125px)_max(125px)_1fr_36px] gap-1.5"
               >
                 <Select
                   onValueChange={(value) =>
@@ -169,6 +211,21 @@ export default function PartialTransactionsDialog({ data }: Props) {
                   <div className="sr-only">Remove Partial</div>
                   <Trash />
                 </Button>
+                <Textarea
+                  name="description"
+                  id="description"
+                  placeholder="Description"
+                  value={form.partials[index].description}
+                  onChange={(event) =>
+                    handleChange({
+                      index,
+                      key: "description",
+                      value: event.target.value,
+                    })
+                  }
+                  className="col-span-3"
+                  rows={3}
+                />
               </div>
             ))}
           </div>
@@ -176,7 +233,7 @@ export default function PartialTransactionsDialog({ data }: Props) {
             type="button"
             variant="secondary"
             size="sm"
-            className="justify-self-start"
+            className="mt-1.5 justify-self-start"
             onClick={handleAddPartial}
           >
             <PlusCircle />
