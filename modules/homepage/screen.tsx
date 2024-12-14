@@ -1,11 +1,12 @@
 "use client";
 
-import { FormActionProvider } from "./useFormAction";
 import { createBucket, fetchBucketsByUserId } from "@/database/actions/bucket";
 import { createTransaction } from "@/database/actions/transaction";
 import { SelectTransaction } from "@/database/schema";
 import TransactionsTable from "@/modules/homepage/components/transactions-table";
 import BucketList from "@/modules/homepage/features/bucket-list";
+import QuickActionsDropdownMenu from "@/modules/homepage/features/quick-actions-dropdown-menu";
+import { FormActionProvider } from "@/modules/homepage/useFormAction";
 import { useActionState } from "react";
 
 export default function Screen({
@@ -51,7 +52,10 @@ export default function Screen({
     <FormActionProvider value={formAction}>
       <main className="mx-auto grid max-w-screen-xl gap-y-4 p-6">
         <section className="grid gap-y-2">
-          <h1 className="font-bold">Buckets</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="font-bold">Buckets</h1>
+            <QuickActionsDropdownMenu data={buckets} />
+          </div>
           <BucketList data={buckets} />
         </section>
         <section className="grid gap-y-2">

@@ -1,4 +1,3 @@
-import { useFormAction } from "../useFormAction";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,10 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useFormAction } from "@/modules/homepage/useFormAction";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 
-export function CreateBucketDialog() {
+export default function CreateBucketDialog() {
   const formAction = useFormAction();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +27,7 @@ export function CreateBucketDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger className="grid place-content-center rounded-xl border bg-card text-card-foreground shadow">
+      <DialogTrigger className="grid place-content-center rounded-xl border bg-card text-card-foreground shadow hover:bg-primary/5">
         <span className="sr-only">Open Create Bucket Dialog</span>
         <PlusIcon className="size-20" />
       </DialogTrigger>

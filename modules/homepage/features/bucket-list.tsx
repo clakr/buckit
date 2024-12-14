@@ -1,5 +1,3 @@
-import { CreateBucketDialog } from "./create-bucket-dialog";
-import CreateTransactionDialog from "./create-transaction-dialog";
 import {
   Card,
   CardDescription,
@@ -16,6 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { fetchBucketsByUserId } from "@/database/actions/bucket";
 import { currencyFormatter } from "@/lib/utils";
+import CreateBucketDialog from "@/modules/homepage/components/create-bucket-dialog";
+import CreateTransactionDialog from "@/modules/homepage/components/create-transaction-dialog";
 import { EllipsisVertical, FilePlus } from "lucide-react";
 import { Fragment, useState } from "react";
 
