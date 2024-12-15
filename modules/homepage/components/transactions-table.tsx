@@ -6,9 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchBucketsByUserId } from "@/database/actions/bucket";
 import { SelectTransaction } from "@/database/schema";
 import { cn, currencyFormatter } from "@/lib/utils";
+import { useFormAction } from "@/modules/homepage/useFormAction";
 import { CircleEqualIcon, CircleMinusIcon, CirclePlusIcon } from "lucide-react";
 
 function getTransactionTypeIcon(type: SelectTransaction["type"]) {
@@ -37,16 +37,18 @@ function getTransactionTypeColor(type: SelectTransaction["type"]) {
   }
 }
 
-type Props = { data: Awaited<ReturnType<typeof fetchBucketsByUserId>> };
-export default function TransactionsTable({ data }: Props) {
-  const transactions = data
+export default function TransactionsTable() {
+  const { buckets } = useFormAction();
+
+  const transactions = buckets
     .flatMap((bucket) =>
       bucket.transactions.map((transaction) => ({
         ...transaction,
         bucket: { name: bucket.name },
       })),
     )
-    .toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    .toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 10);
 
   return (
     <Table>

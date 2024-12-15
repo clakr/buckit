@@ -16,7 +16,7 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 
 // @todo: create client-side validation
-export default function CreateBucketDialog() {
+export default function CreateGoalDialog() {
   const { formAction } = useFormAction();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -29,33 +29,44 @@ export default function CreateBucketDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger className="grid place-content-center rounded-xl border bg-card py-12 text-card-foreground shadow hover:bg-primary/5">
-        <span className="sr-only">Open Create Bucket Dialog</span>
+        <span className="sr-only">Open Create Goal Dialog</span>
         <PlusIcon className="size-20" />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Bucket</DialogTitle>
+          <DialogTitle>Create Goal</DialogTitle>
           <DialogDescription>
-            Input the bucket details below to create a bucket
+            Input the goal details below to create a goal
           </DialogDescription>
         </DialogHeader>
         <form
-          id="createBucketForm"
+          id="createGoalForm"
           className="grid gap-y-4"
           action={handleSubmit}
         >
-          <input type="hidden" name="form" value="createBucketForm" />
+          <input type="hidden" name="form" value="createGoalForm" />
           <div className="grid gap-y-2">
             <Label htmlFor="name">Name</Label>
             <Input type="text" name="name" id="name" />
           </div>
           <div className="grid gap-y-2">
-            <Label htmlFor="totalAmount">Total Amount</Label>
+            <Label htmlFor="initialAmount">Initial Amount</Label>
             <Input
               type="number"
-              name="totalAmount"
-              id="totalAmount"
+              name="initialAmount"
+              id="initialAmount"
               step={0.01}
+              defaultValue={0}
+            />
+          </div>
+          <div className="grid gap-y-2">
+            <Label htmlFor="targetAmount">Target Amount</Label>
+            <Input
+              type="number"
+              name="targetAmount"
+              id="targetAmount"
+              step={0.01}
+              min={1}
               defaultValue={0}
             />
           </div>
@@ -65,7 +76,7 @@ export default function CreateBucketDialog() {
           </div>
         </form>
         <DialogFooter>
-          <Button type="submit" form="createBucketForm">
+          <Button type="submit" form="createGoalForm">
             Create
           </Button>
         </DialogFooter>

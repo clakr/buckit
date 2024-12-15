@@ -7,17 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { fetchBucketsByUserId } from "@/database/actions/bucket";
 import { SquareStack } from "lucide-react";
 import { useState } from "react";
 
 type Action = "partial-transactions";
 
-type Props = {
-  data: Awaited<ReturnType<typeof fetchBucketsByUserId>>;
-};
-
-export default function QuickActionsDropdownMenu({ data }: Props) {
+export default function QuickActionsDropdownMenu() {
   const [dialogContent, setDialogContent] = useState<Action>(
     "partial-transactions",
   );
@@ -44,7 +39,7 @@ export default function QuickActionsDropdownMenu({ data }: Props) {
 
       <DialogContent>
         {dialogContent === "partial-transactions" ? (
-          <PartialTransactionsDialog data={data} />
+          <PartialTransactionsDialog />
         ) : null}
       </DialogContent>
     </Dialog>

@@ -21,7 +21,11 @@ export async function createTransaction(
     .where(eq(bucket.id, transactionData.bucketId))
     .returning();
 
-  const [newTransaction] = await db
+  const goal = await db.query.goal.findFirst({
+    where: (goal, { eq }) => eq(goal.bucketId, transactionData.bucketId),
+  });
+
+  const [insertedTransaction] = await db
     .insert(transaction)
     .values({
       bucketId: transactionData.bucketId,
@@ -32,5 +36,11 @@ export async function createTransaction(
     })
     .returning();
 
-  return { bucket: updatedBucket, transaction: newTransaction };
+  return {
+    bucket: {
+      ...updatedBucket,
+      goal: goal ?? null,
+    },
+    transaction: insertedTransaction,
+  };
 }

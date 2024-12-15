@@ -16,10 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { fetchBucketsByUserId } from "@/database/actions/bucket";
 import { InsertTransaction } from "@/database/schema";
 import { PlusCircle, Trash } from "lucide-react";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 type Partial = {
   bucketId: string;
@@ -32,12 +31,9 @@ type Form = {
   partials: Partial[];
 };
 
-type Props = {
-  data: Awaited<ReturnType<typeof fetchBucketsByUserId>>;
-};
-
-export default function PartialTransactionsDialog({ data }: Props) {
-  const formAction = useFormAction();
+// @todo: create client-side validation
+export default function PartialTransactionsDialog() {
+  const { buckets, formAction } = useFormAction();
   const [form, setForm] = useState<Form>({
     baseAmount: "",
     partials: [
@@ -166,7 +162,7 @@ export default function PartialTransactionsDialog({ data }: Props) {
                     <SelectValue placeholder="Bucket" />
                   </SelectTrigger>
                   <SelectContent>
-                    {data.map((bucket) => (
+                    {buckets.map((bucket) => (
                       <SelectItem key={bucket.id} value={bucket.id.toString()}>
                         {bucket.name}
                       </SelectItem>

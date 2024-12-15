@@ -1,92 +1,35 @@
 "use client";
 
-import { createBucket, fetchBucketsByUserId } from "@/database/actions/bucket";
-import { createTransaction } from "@/database/actions/transaction";
-import { SelectTransaction } from "@/database/schema";
+import { fetchBucketsByUserId } from "@/database/actions/bucket";
 import TransactionsTable from "@/modules/homepage/components/transactions-table";
 import BucketList from "@/modules/homepage/features/bucket-list";
+import GoalList from "@/modules/homepage/features/goal-list";
 import QuickActionsDropdownMenu from "@/modules/homepage/features/quick-actions-dropdown-menu";
 import { FormActionProvider } from "@/modules/homepage/useFormAction";
-import { useActionState } from "react";
 
+// @todo: separate buckets, goals and transactions
 export default function Screen({
   data,
 }: {
   data: Awaited<ReturnType<typeof fetchBucketsByUserId>>;
 }) {
-  const [buckets, formAction] = useActionState<
-    ReturnType<typeof fetchBucketsByUserId>,
-    FormData
-  >(async (initialState, formData) => {
-    const data = Object.fromEntries(formData);
-
-    if (data.form === "createBucketForm") {
-      const newBucket = await createBucket({
-        name: data.name.toString() ?? "",
-        description: data.description.toString() ?? "",
-        totalAmount: data.totalAmount.toString() ?? "0",
-      });
-
-      return [...initialState, newBucket];
-    } else if (data.form === "createTransactionForm") {
-      const { bucket, transaction } = await createTransaction({
-        bucketId: parseInt(data.bucketId.toString() ?? "0"),
-        description: data.description.toString() ?? "",
-        type: data.type as SelectTransaction["type"],
-        amount: data.amount.toString() ?? "",
-      });
-
-      const bucketIndex = initialState.findIndex((b) => bucket.id === b.id);
-      const bucketTransactions = initialState[bucketIndex].transactions;
-
-      return initialState.with(bucketIndex, {
-        ...bucket,
-        transactions: [...bucketTransactions, transaction],
-      });
-    } else if (data.form === "partialTransactionsForm") {
-      // first method
-      const parsedTransactions = JSON.parse(
-        data.transactions.toString(),
-      ) as Array<{
-        bucketId: number;
-        description: string;
-        amount: string;
-        type: "inbound";
-      }>;
-
-      const createdTransactions = await Promise.all(
-        parsedTransactions.map(
-          async (transaction) => await createTransaction({ ...transaction }),
-        ),
-      );
-
-      return createdTransactions.reduce((previous, { bucket, transaction }) => {
-        const bucketIndex = initialState.findIndex((b) => bucket.id === b.id);
-        const bucketTransactions = initialState[bucketIndex].transactions;
-
-        return previous.with(bucketIndex, {
-          ...bucket,
-          transactions: [...bucketTransactions, transaction],
-        });
-      }, initialState);
-    }
-
-    return initialState;
-  }, data);
-
   return (
-    <FormActionProvider value={formAction}>
+    <FormActionProvider data={data}>
       <main className="mx-auto grid max-w-screen-xl gap-y-4 p-6">
         <section className="grid gap-y-2">
           <div className="flex items-center justify-between">
             <h1 className="font-bold">Buckets</h1>
-            <QuickActionsDropdownMenu data={buckets} />
+            <QuickActionsDropdownMenu />
           </div>
-          <BucketList data={buckets} />
+          <BucketList />
+        </section>
+        <section className="grid gap-y-2">
+          <h2 className="font-medium">Goals</h2>
+          <GoalList />
         </section>
         <section className="grid gap-y-2">
           <h2 className="font-medium">Recent Transactions</h2>
-          <TransactionsTable data={buckets} />
+          <TransactionsTable />
         </section>
       </main>
     </FormActionProvider>

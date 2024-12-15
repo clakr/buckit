@@ -26,8 +26,9 @@ export const bucket = pgTable("buckets", {
   ...timestamps,
 });
 
-export const bucketRelations = relations(bucket, ({ many }) => ({
+export const bucketRelations = relations(bucket, ({ one, many }) => ({
   transactions: many(transaction),
+  goal: one(goal),
 }));
 
 export type SelectBucket = typeof bucket.$inferSelect;
@@ -60,6 +61,23 @@ export type InsertTransaction = typeof transaction.$inferInsert;
 export const transactionRelations = relations(transaction, ({ one }) => ({
   bucket: one(bucket, {
     fields: [transaction.bucketId],
+    references: [bucket.id],
+  }),
+}));
+
+export const goal = pgTable("goals", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  bucketId: integer("bucket_id")
+    .references(() => bucket.id)
+    .notNull(),
+  targetAmount: decimal("target_amount", { precision: 12, scale: 2 }).notNull(),
+});
+
+export type InsertGoal = typeof goal.$inferInsert;
+
+export const goalRelations = relations(goal, ({ one }) => ({
+  bucket: one(bucket, {
+    fields: [goal.bucketId],
     references: [bucket.id],
   }),
 }));

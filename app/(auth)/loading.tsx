@@ -6,6 +6,10 @@ export default function Loading() {
         <p>loading...</p>
       </section>
       <section className="grid gap-y-2">
+        <h2 className="font-medium">Goals</h2>
+        <p>loading...</p>
+      </section>
+      <section className="grid gap-y-2">
         <h2 className="font-medium">Recent Transactions</h2>
         <p>loading...</p>
       </section>

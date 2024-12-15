@@ -12,6 +12,7 @@ export async function fetchBucketsByUserId() {
     where: (bucket, { eq }) => eq(bucket.userId, userId),
     with: {
       transactions: true,
+      goal: true,
     },
   });
 
@@ -22,7 +23,7 @@ export async function createBucket(bucketData: Omit<InsertBucket, "userId">) {
   const { userId } = await auth();
   if (!userId) throw new Error("no userId");
 
-  const [newBucket] = await db
+  const [insertedBucket] = await db
     .insert(bucket)
     .values({
       userId,
@@ -32,13 +33,13 @@ export async function createBucket(bucketData: Omit<InsertBucket, "userId">) {
     })
     .returning();
 
-  const bucketTransactions = [];
+  const transactions = [];
 
   if (+bucketData.totalAmount !== 0) {
-    const [newTransaction] = await db
+    const [insertedTransaction] = await db
       .insert(transaction)
       .values({
-        bucketId: newBucket.id,
+        bucketId: insertedBucket.id,
         description: "Initial Bucket Value",
         type: "default",
         amount: bucketData.totalAmount,
@@ -46,8 +47,12 @@ export async function createBucket(bucketData: Omit<InsertBucket, "userId">) {
       })
       .returning();
 
-    bucketTransactions.push(newTransaction);
+    transactions.push(insertedTransaction);
   }
 
-  return { ...newBucket, transactions: bucketTransactions };
+  return {
+    ...insertedBucket,
+    transactions,
+    goal: null,
+  };
 }

@@ -16,8 +16,9 @@ type Props = {
   bucketId: SelectBucket["id"];
 };
 
+// @todo: create client-side validation
 export default function CreateTransactionDialog({ bucketId }: Props) {
-  const formAction = useFormAction();
+  const { formAction } = useFormAction();
 
   function handleSubmit(formData: FormData) {
     const closeButtonElement = document.querySelector(
