@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchBucketsByUserId } from "@/database/actions/bucket";
 import TransactionsTable from "@/modules/homepage/components/transactions-table";
 import BucketsTabContent from "@/modules/homepage/features/buckets-tab-content";
-import GoalList from "@/modules/homepage/features/goal-list";
+import GoalsTabContent from "@/modules/homepage/features/goals-tab-content";
 import OverviewTabContent from "@/modules/homepage/features/overview-tab-content";
 import QuickActionsDropdownMenu from "@/modules/homepage/features/quick-actions-dropdown-menu";
 import { FormActionProvider } from "@/modules/homepage/useFormAction";
@@ -28,7 +28,7 @@ export default function Screen({
           </TabsList>
           <OverviewTabContent />
           <BucketsTabContent />
-          <TabsContent value="goals">Goals</TabsContent>
+          <GoalsTabContent />
           <TabsContent value="transactions">Transactions</TabsContent>
         </Tabs>
       </main>

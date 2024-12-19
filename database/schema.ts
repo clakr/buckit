@@ -73,6 +73,7 @@ export const goal = pgTable("goals", {
   targetAmount: decimal("target_amount", { precision: 12, scale: 2 }).notNull(),
 });
 
+export type SelectGoal = typeof goal.$inferSelect;
 export type InsertGoal = typeof goal.$inferInsert;
 
 export const goalRelations = relations(goal, ({ one }) => ({

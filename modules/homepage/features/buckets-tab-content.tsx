@@ -7,18 +7,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import { currencyFormatter } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 
 export default function BucketsTabContent() {
   const { buckets } = useFormAction();
 
   const sortedBuckets = buckets
     .filter((bucket) => !bucket.goal)
-    .toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
   return (
     <TabsContent value="buckets">
-      <section className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
+      <section className="grid auto-rows-fr grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
         {sortedBuckets.map((bucket) => (
           <Card key={bucket.id} className="flex flex-col justify-between">
             <CardHeader>
@@ -26,7 +26,7 @@ export default function BucketsTabContent() {
               <CardDescription>{bucket.description}</CardDescription>
             </CardHeader>
             <CardFooter className="justify-end font-bold">
-              {currencyFormatter.format(+bucket.totalAmount)}
+              {formatCurrency(bucket.totalAmount)}
             </CardFooter>
           </Card>
         ))}

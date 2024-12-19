@@ -5,7 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const currencyFormatter = new Intl.NumberFormat("en-PH", {
-  style: "currency",
-  currency: "php",
-});
+export function formatCurrency(input: number | string) {
+  if (typeof input === "string") {
+    input = parseFloat(input);
+  }
+
+  const currencyFormatter = new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "php",
+  });
+
+  return currencyFormatter.format(input);
+}
