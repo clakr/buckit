@@ -5,7 +5,13 @@ import { bucket, InsertBucket, transaction } from "@/database/schema";
 import { auth } from "@clerk/nextjs/server";
 
 export async function fetchBucketsByUserId() {
-  const { userId } = await auth();
+  let userId;
+  if (process.env.NODE_ENV === "development") {
+    userId = process.env.USER_ID;
+  } else {
+    const currentAuth = await auth();
+    userId = currentAuth.userId;
+  }
   if (!userId) throw new Error("no userId");
 
   const buckets = await db.query.bucket.findMany({
