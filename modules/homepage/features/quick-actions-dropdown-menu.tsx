@@ -1,4 +1,3 @@
-import PartialTransactionsDialog from "../components/partial-transactions-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -7,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import PartialTransactionsDialog from "@/modules/homepage/components/partial-transactions-dialog";
 import { SquareStack } from "lucide-react";
 import { useState } from "react";
 

@@ -7,7 +7,7 @@ import BucketsTabContent from "@/modules/homepage/features/buckets-tab-content";
 import GoalsTabContent from "@/modules/homepage/features/goals-tab-content";
 import OverviewTabContent from "@/modules/homepage/features/overview-tab-content";
 import QuickActionsDropdownMenu from "@/modules/homepage/features/quick-actions-dropdown-menu";
-import { FormActionProvider } from "@/modules/homepage/useFormAction";
+import { FormActionProvider } from "@/modules/homepage/use-form-action";
 
 // @todo: separate buckets, goals and transactions
 export default function Screen({
@@ -24,12 +24,10 @@ export default function Screen({
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="buckets">Buckets</TabsTrigger>
             <TabsTrigger value="goals">Goals</TabsTrigger>
-            <TabsTrigger value="transactions">Transactions</TabsTrigger>
           </TabsList>
           <OverviewTabContent />
           <BucketsTabContent />
           <GoalsTabContent />
-          <TabsContent value="transactions">Transactions</TabsContent>
         </Tabs>
       </main>
       {/* <main className="mx-auto grid max-w-screen-xl gap-y-4 p-6">

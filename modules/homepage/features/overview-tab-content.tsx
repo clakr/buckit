@@ -1,7 +1,7 @@
-import { useFormAction } from "../useFormAction";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
 import { formatCurrency } from "@/lib/utils";
+import { useFormAction } from "@/modules/homepage/use-form-action";
 import { Coins, Goal, PiggyBank } from "lucide-react";
 
 export default function OverviewTabContent() {

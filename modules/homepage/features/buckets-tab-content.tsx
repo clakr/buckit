@@ -1,4 +1,3 @@
-import { useFormAction } from "../useFormAction";
 import {
   Card,
   CardDescription,
@@ -8,6 +7,8 @@ import {
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
 import { formatCurrency } from "@/lib/utils";
+import RecentTransactionsTable from "@/modules/homepage/components/recent-transactions-table";
+import { useFormAction } from "@/modules/homepage/use-form-action";
 
 export default function BucketsTabContent() {
   const { buckets } = useFormAction();
@@ -17,7 +18,7 @@ export default function BucketsTabContent() {
     .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
   return (
-    <TabsContent value="buckets">
+    <TabsContent value="buckets" className="grid gap-y-8">
       <section className="grid auto-rows-fr grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
         {sortedBuckets.map((bucket) => (
           <Card key={bucket.id} className="flex flex-col justify-between">
@@ -30,6 +31,11 @@ export default function BucketsTabContent() {
             </CardFooter>
           </Card>
         ))}
+      </section>
+
+      <section>
+        <h2 className="font-medium">Recent Transactions</h2>
+        <RecentTransactionsTable data={sortedBuckets} />
       </section>
     </TabsContent>
   );

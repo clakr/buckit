@@ -1,4 +1,3 @@
-import { useFormAction } from "../useFormAction";
 import {
   Card,
   CardHeader,
@@ -8,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatCurrency } from "@/lib/utils";
+import { useFormAction } from "@/modules/homepage/use-form-action";
 
 type Props = {
   goal: Awaited<ReturnType<typeof useFormAction>>["buckets"][number];

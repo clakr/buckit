@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { SelectBucket } from "@/database/schema";
-import { useFormAction } from "@/modules/homepage/useFormAction";
+import { useFormAction } from "@/modules/homepage/use-form-action";
 
 type Props = {
   bucketId: SelectBucket["id"];
