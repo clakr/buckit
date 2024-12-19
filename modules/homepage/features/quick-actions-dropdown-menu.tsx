@@ -6,41 +6,63 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import PartialTransactionsDialog from "@/modules/homepage/components/partial-transactions-dialog";
-import { SquareStack } from "lucide-react";
+import CreateBucketDialog from "@/modules/homepage/components/create-bucket-dialog";
+import CreateGoalDialog from "@/modules/homepage/components/create-goal-dialog";
+import CreatePartialTransactionsDialog from "@/modules/homepage/components/create-partial-transactions-dialog";
+import { Coins, Goal, SquareStack } from "lucide-react";
 import { useState } from "react";
 
-type Action = "partial-transactions";
+type Dialog = "create-bucket" | "create-goal" | "create-partial-transactions";
 
 export default function QuickActionsDropdownMenu() {
-  const [dialogContent, setDialogContent] = useState<Action>(
-    "partial-transactions",
-  );
+  const [dialogContent, setDialogContent] = useState<Dialog>("create-bucket");
+
+  function DialogState() {
+    if (dialogContent === "create-bucket") return <CreateBucketDialog />;
+    else if (dialogContent === "create-goal") return <CreateGoalDialog />;
+    else if (dialogContent === "create-partial-transactions")
+      return <CreatePartialTransactionsDialog />;
+  }
 
   return (
     <Dialog>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
-            Quick Actions
-          </Button>
+          <Button>Quick Actions</Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DialogTrigger asChild>
-            <DropdownMenuItem
-              onClick={() => setDialogContent("partial-transactions")}
-            >
+          <DialogTrigger
+            onClick={() => setDialogContent("create-bucket")}
+            asChild
+          >
+            <DropdownMenuItem>
+              <Coins />
+              Create Bucket
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogTrigger
+            onClick={() => setDialogContent("create-goal")}
+            asChild
+          >
+            <DropdownMenuItem>
+              <Goal />
+              Create Goal
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogTrigger
+            onClick={() => setDialogContent("create-partial-transactions")}
+            asChild
+          >
+            <DropdownMenuItem>
               <SquareStack />
-              Partial Transactions
+              Create Partial Transactions
             </DropdownMenuItem>
           </DialogTrigger>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <DialogContent>
-        {dialogContent === "partial-transactions" ? (
-          <PartialTransactionsDialog />
-        ) : null}
+        <DialogState />
       </DialogContent>
     </Dialog>
   );
