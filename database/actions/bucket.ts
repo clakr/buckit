@@ -9,7 +9,7 @@ export async function fetchBucketsByUserId() {
   if (!userId) throw new Error("no userId");
 
   const buckets = await db.query.bucket.findMany({
-    where: (bucket, { eq }) => eq(bucket.userId, userId),
+    // where: (bucket, { eq }) => eq(bucket.userId, userId),
     with: {
       transactions: true,
       goal: true,
