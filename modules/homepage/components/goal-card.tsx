@@ -1,3 +1,4 @@
+import GoalsActionsDropdownMenu from "./goals-actions-dropdown-menu";
 import {
   Card,
   CardHeader,
@@ -22,7 +23,8 @@ export default function GoalCard({ goal }: Props) {
   );
 
   return (
-    <Card className="flex flex-col justify-between">
+    <Card className="relative flex flex-col justify-between">
+      <GoalsActionsDropdownMenu />
       <CardHeader>
         <CardTitle className="uppercase">{goal.name}</CardTitle>
         <CardDescription>{goal.description}</CardDescription>
