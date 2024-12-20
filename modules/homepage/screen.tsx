@@ -2,10 +2,10 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchBucketsByUserId } from "@/database/actions/bucket";
+import QuickActionsDropdownMenu from "@/modules/homepage/components/quick-actions-dropdown-menu";
 import BucketsTabContent from "@/modules/homepage/features/buckets-tab-content";
 import GoalsTabContent from "@/modules/homepage/features/goals-tab-content";
 import OverviewTabContent from "@/modules/homepage/features/overview-tab-content";
-import QuickActionsDropdownMenu from "@/modules/homepage/features/quick-actions-dropdown-menu";
 import { FormActionProvider } from "@/modules/homepage/use-form-action";
 
 export default function Screen({
