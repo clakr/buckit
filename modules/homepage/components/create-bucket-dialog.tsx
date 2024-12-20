@@ -30,7 +30,9 @@ export default function CreateBucketDialog() {
           <Input type="number" name="totalAmount" id="totalAmount" />
         </div>
         <div className="grid gap-y-1.5">
-          <Label htmlFor="description">Description (optional)</Label>
+          <Label htmlFor="description">
+            Description <small>(optional)</small>
+          </Label>
           <Textarea name="description" id="description" rows={5}></Textarea>
         </div>
       </form>

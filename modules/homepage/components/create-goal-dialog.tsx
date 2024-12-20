@@ -34,7 +34,9 @@ export default function CreateGoalDialog() {
           <Input type="number" name="targetAmount" id="targetAmount" />
         </div>
         <div className="grid gap-y-1.5">
-          <Label htmlFor="description">Description (optional)</Label>
+          <Label htmlFor="description">
+            Description <small>(optional)</small>
+          </Label>
           <Textarea name="description" id="description" rows={5}></Textarea>
         </div>
       </form>
