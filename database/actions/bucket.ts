@@ -1,15 +1,16 @@
 "use server";
 
 import { db } from "@/database";
-import { bucket, InsertBucket, transaction } from "@/database/schema";
+import { bucket, createBucketSchema, transaction } from "@/database/schema";
 import { auth } from "@clerk/nextjs/server";
+import { z } from "zod";
 
 export async function fetchBucketsByUserId() {
   const { userId } = await auth();
   if (!userId) throw new Error("no userId");
 
   const buckets = await db.query.bucket.findMany({
-    // where: (bucket, { eq }) => eq(bucket.userId, userId),
+    where: (bucket, { eq }) => eq(bucket.userId, userId),
     with: {
       transactions: true,
       goal: true,
@@ -19,7 +20,9 @@ export async function fetchBucketsByUserId() {
   return buckets;
 }
 
-export async function createBucket(bucketData: Omit<InsertBucket, "userId">) {
+export async function createBucket(
+  bucketData: z.infer<typeof createBucketSchema>,
+) {
   const { userId } = await auth();
   if (!userId) throw new Error("no userId");
 

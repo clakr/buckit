@@ -8,6 +8,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
 
 const timestamps = {
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -16,6 +17,8 @@ const timestamps = {
     .notNull()
     .$onUpdate(() => new Date()),
 };
+
+// BUCKET
 
 export const bucket = pgTable("buckets", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -31,8 +34,12 @@ export const bucketRelations = relations(bucket, ({ one, many }) => ({
   goal: one(goal),
 }));
 
-export type SelectBucket = typeof bucket.$inferSelect;
-export type InsertBucket = typeof bucket.$inferInsert;
+export const createBucketSchema = createInsertSchema(bucket, {
+  name: (schema) => schema.nonempty("Name is required"),
+  totalAmount: (schema) => schema.nonempty("Total amount is required"),
+}).partial({
+  userId: true,
+});
 
 export const transactionEnum = pgEnum("type", [
   "default",
