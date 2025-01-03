@@ -1,9 +1,10 @@
 "use server";
 
 import { db } from "@/database";
-import { goal, InsertGoal } from "@/database/schema";
+import { createGoalSchema, goal } from "@/database/schema";
+import { z } from "zod";
 
-export async function createGoal(goalData: InsertGoal) {
+export async function createGoal(goalData: z.infer<typeof createGoalSchema>) {
   const [newGoal] = await db
     .insert(goal)
     .values({

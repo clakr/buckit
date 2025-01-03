@@ -1,7 +1,6 @@
 import { createBucket, fetchBucketsByUserId } from "@/database/actions/bucket";
 import { createGoal } from "@/database/actions/goal";
-import { createTransaction } from "@/database/actions/transaction";
-import { createBucketSchema } from "@/database/schema";
+import { createBucketGoalSchema, createBucketSchema } from "@/database/schema";
 import {
   createContext,
   PropsWithChildren,
@@ -10,10 +9,16 @@ import {
 } from "react";
 import { z } from "zod";
 
-type FormActionArgs = {
-  intent: "create-bucket";
-  data: z.infer<typeof createBucketSchema>;
-};
+type FormActionArgs =
+  | {
+      intent: "create-bucket";
+      data: z.infer<typeof createBucketSchema>;
+    }
+  | {
+      intent: "create-goal";
+      // data: z.infer<typeof createBucketSchema> & z.infer<typeof createGoalSchema>;
+      data: z.infer<typeof createBucketGoalSchema>;
+    };
 
 export const FormActionContext = createContext<
   | {
@@ -33,9 +38,23 @@ export function FormActionProvider({
     ReturnType<typeof fetchBucketsByUserId>,
     FormActionArgs
   >(async (initialState, { intent, data }) => {
+    console.log(intent);
     if (intent === "create-bucket") {
       const newBucket = await createBucket(data);
       return [...initialState, newBucket];
+    } else if (intent === "create-goal") {
+      const newBucket = await createBucket({
+        name: data.name,
+        totalAmount: data.totalAmount,
+        description: data.description,
+      });
+
+      const newGoal = await createGoal({
+        bucketId: newBucket.id,
+        targetAmount: data.targetAmount,
+      });
+
+      return [...initialState, { ...newBucket, goal: newGoal }];
     }
     // const data = Object.fromEntries(formData);
 

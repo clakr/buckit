@@ -35,8 +35,16 @@ export const bucketRelations = relations(bucket, ({ one, many }) => ({
 }));
 
 export const createBucketSchema = createInsertSchema(bucket, {
-  name: (schema) => schema.nonempty("Name is required"),
-  totalAmount: (schema) => schema.nonempty("Total amount is required"),
+  name: (schema) =>
+    schema
+      .nonempty("Name is required")
+      .max(255, "Name must be at most 255 characters"),
+  totalAmount: (schema) =>
+    schema
+      .nonempty("Total amount is required")
+      .max(999_999_999_999, "Total amount reached the maximum value"),
+  description: (schema) =>
+    schema.max(1000, "Description must be at most 1000 characters"),
 }).partial({
   userId: true,
 });
@@ -80,12 +88,34 @@ export const goal = pgTable("goals", {
   targetAmount: decimal("target_amount", { precision: 12, scale: 2 }).notNull(),
 });
 
-export type SelectGoal = typeof goal.$inferSelect;
-export type InsertGoal = typeof goal.$inferInsert;
-
 export const goalRelations = relations(goal, ({ one }) => ({
   bucket: one(bucket, {
     fields: [goal.bucketId],
     references: [bucket.id],
   }),
 }));
+
+export const createGoalSchema = createInsertSchema(goal, {
+  targetAmount: (schema) =>
+    schema
+      .nonempty("Target amount is required")
+      .max(999_999_999_999, "Target amount reached the maximum value"),
+});
+export const createBucketGoalSchema = createBucketSchema
+  .merge(createGoalSchema)
+  .partial({
+    bucketId: true,
+  })
+  .refine(
+    (data) => {
+      if (data.totalAmount !== null && data.targetAmount !== null) {
+        return data.targetAmount > data.totalAmount;
+      }
+
+      return true;
+    },
+    {
+      message: "Target amount must be greater than the total amount",
+      path: ["targetAmount"],
+    },
+  );

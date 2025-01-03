@@ -19,7 +19,7 @@ export default function CreateBucketDialog() {
     useState<z.inferFlattenedErrors<typeof createBucketSchema>>();
 
   function handleSubmit(formData: FormData) {
-    const { success, data, error } = createBucketSchema.safeParse(
+    const { success, error, data } = createBucketSchema.safeParse(
       Object.fromEntries(formData),
     );
 
