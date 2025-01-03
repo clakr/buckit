@@ -26,7 +26,7 @@ export default function BucketsTabContent() {
             key={bucket.id}
             className="relative flex flex-col justify-between"
           >
-            <BucketsActionsDropdownMenu />
+            <BucketsActionsDropdownMenu bucketId={bucket.id} />
             <CardHeader>
               <CardTitle className="uppercase">{bucket.name}</CardTitle>
               <CardDescription>{bucket.description}</CardDescription>

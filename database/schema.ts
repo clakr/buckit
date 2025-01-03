@@ -9,6 +9,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
 
 const timestamps = {
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -18,7 +19,9 @@ const timestamps = {
     .$onUpdate(() => new Date()),
 };
 
-// BUCKET
+////////////
+// BUCKET //
+////////////
 
 export const bucket = pgTable("buckets", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -39,6 +42,7 @@ export const createBucketSchema = createInsertSchema(bucket, {
     schema
       .nonempty("Name is required")
       .max(255, "Name must be at most 255 characters"),
+  // @todo: coerce `totalAmount` to number
   totalAmount: (schema) =>
     schema
       .nonempty("Total amount is required")
@@ -48,6 +52,10 @@ export const createBucketSchema = createInsertSchema(bucket, {
 }).partial({
   userId: true,
 });
+
+/////////////////
+// TRANSACTION //
+/////////////////
 
 export const transactionEnum = pgEnum("type", [
   "default",
@@ -70,15 +78,34 @@ export const transaction = pgTable("transactions", {
   ...timestamps,
 });
 
-export type SelectTransaction = typeof transaction.$inferSelect;
-export type InsertTransaction = typeof transaction.$inferInsert;
-
 export const transactionRelations = relations(transaction, ({ one }) => ({
   bucket: one(bucket, {
     fields: [transaction.bucketId],
     references: [bucket.id],
   }),
 }));
+
+export const createTransactionSchema = createInsertSchema(transaction, {
+  bucketId: z.coerce.number(),
+  amount: z.coerce
+    .number()
+    .gte(1, "Amount must be at least 1")
+    .transform((value) => value.toString()),
+  description: (schema) =>
+    schema
+      .nonempty("Description is required")
+      .max(1000, "Description must be at most 1000 characters"),
+  type: (schema) =>
+    schema.exclude(["default"], {
+      message: "Type must be either Inbound or Outbound",
+    }),
+}).partial({
+  runningBalance: true,
+});
+
+//////////
+// GOAL //
+//////////
 
 export const goal = pgTable("goals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -96,11 +123,13 @@ export const goalRelations = relations(goal, ({ one }) => ({
 }));
 
 export const createGoalSchema = createInsertSchema(goal, {
+  // @todo: coerce `targetAmount` to number
   targetAmount: (schema) =>
     schema
       .nonempty("Target amount is required")
       .max(999_999_999_999, "Target amount reached the maximum value"),
 });
+
 export const createBucketGoalSchema = createBucketSchema
   .merge(createGoalSchema)
   .partial({

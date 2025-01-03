@@ -1,15 +1,17 @@
 "use server";
 
 import { db } from "@/database";
-import { bucket, InsertTransaction, transaction } from "@/database/schema";
+import {
+  bucket,
+  createTransactionSchema,
+  transaction,
+} from "@/database/schema";
 import { eq, sql } from "drizzle-orm";
+import { z } from "zod";
 
 export async function createTransaction(
-  transactionData: Omit<InsertTransaction, "runningBalance">,
+  transactionData: z.infer<typeof createTransactionSchema>,
 ) {
-  if (transactionData.type === "default")
-    throw new Error("invalid transaction type");
-
   const [updatedBucket] = await db
     .update(bucket)
     .set({

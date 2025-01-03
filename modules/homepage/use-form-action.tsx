@@ -1,6 +1,11 @@
 import { createBucket, fetchBucketsByUserId } from "@/database/actions/bucket";
 import { createGoal } from "@/database/actions/goal";
-import { createBucketGoalSchema, createBucketSchema } from "@/database/schema";
+import { createTransaction } from "@/database/actions/transaction";
+import {
+  createBucketGoalSchema,
+  createBucketSchema,
+  createTransactionSchema,
+} from "@/database/schema";
 import {
   createContext,
   PropsWithChildren,
@@ -16,8 +21,11 @@ type FormActionArgs =
     }
   | {
       intent: "create-goal";
-      // data: z.infer<typeof createBucketSchema> & z.infer<typeof createGoalSchema>;
       data: z.infer<typeof createBucketGoalSchema>;
+    }
+  | {
+      intent: "create-transaction";
+      data: z.infer<typeof createTransactionSchema>;
     };
 
 export const FormActionContext = createContext<
@@ -38,7 +46,6 @@ export function FormActionProvider({
     ReturnType<typeof fetchBucketsByUserId>,
     FormActionArgs
   >(async (initialState, { intent, data }) => {
-    console.log(intent);
     if (intent === "create-bucket") {
       const newBucket = await createBucket(data);
       return [...initialState, newBucket];
@@ -55,7 +62,18 @@ export function FormActionProvider({
       });
 
       return [...initialState, { ...newBucket, goal: newGoal }];
+    } else if (intent === "create-transaction") {
+      const { bucket, transaction } = await createTransaction(data);
+
+      const bucketIndex = initialState.findIndex((b) => bucket.id === b.id);
+      const bucketTransactions = initialState[bucketIndex].transactions;
+
+      return initialState.with(bucketIndex, {
+        ...bucket,
+        transactions: [...bucketTransactions, transaction],
+      });
     }
+
     // const data = Object.fromEntries(formData);
 
     // if (data.form === "createBucketForm") {

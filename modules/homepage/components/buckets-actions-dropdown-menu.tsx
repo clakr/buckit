@@ -6,19 +6,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { createTransactionSchema } from "@/database/schema";
 import { CreateTransactionsDialog } from "@/modules/homepage/components/create-transactions-dialog";
 import { FileText, MoreVertical } from "lucide-react";
 import { useState } from "react";
+import { z } from "zod";
+
+type Props = {
+  bucketId: z.infer<typeof createTransactionSchema>["bucketId"];
+};
 
 type Dialog = "create-transaction";
 
-export default function BucketsActionsDropdownMenu() {
+export default function BucketsActionsDropdownMenu({ bucketId }: Props) {
   const [dialogContent, setDialogContent] =
     useState<Dialog>("create-transaction");
 
   function DialogState() {
     if (dialogContent === "create-transaction")
-      return <CreateTransactionsDialog />;
+      return <CreateTransactionsDialog bucketId={bucketId} />;
   }
 
   return (
