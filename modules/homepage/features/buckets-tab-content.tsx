@@ -38,7 +38,7 @@ export default function BucketsTabContent() {
         ))}
       </section>
 
-      <section>
+      <section className="overflow-x-hidden">
         <h2 className="font-medium">Recent Transactions</h2>
         <RecentTransactionsTable data={sortedBuckets} />
       </section>

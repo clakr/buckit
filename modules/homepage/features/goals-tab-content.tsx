@@ -17,7 +17,8 @@ export default function GoalsTabContent() {
           <GoalCard key={goal.id} goal={goal} />
         ))}
       </section>
-      <section>
+
+      <section className="overflow-x-hidden">
         <h2 className="font-medium">Recent Transactions</h2>
         <RecentTransactionsTable data={goals} />
       </section>
