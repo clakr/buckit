@@ -15,9 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { createPartialTransactionSchema } from "@/database/schema";
+import { cn, formatCurrency } from "@/lib/utils";
 import { useFormAction } from "@/modules/homepage/use-form-action";
 import { Banknote, Percent, PlusCircle, Trash } from "lucide-react";
 import { ChangeEvent, useState } from "react";
+import { z } from "zod";
 
 type Form = {
   baseAmount: string;
@@ -29,7 +32,6 @@ type Partial = {
   bucketId: string;
   type: "flat" | "percentage";
   amount: string;
-  description: string;
 };
 
 const DEFAULT_FORM_STATE: Form = {
@@ -40,15 +42,34 @@ const DEFAULT_FORM_STATE: Form = {
       bucketId: "",
       type: "flat",
       amount: "",
-      description: "",
     },
   ],
 };
 
+// @todo: add visual indicators for partial errors
 export default function CreatePartialTransactionsDialog() {
-  const { buckets } = useFormAction();
+  const { buckets, formAction } = useFormAction();
+  const [errors, setErrors] =
+    useState<z.inferFlattenedErrors<typeof createPartialTransactionSchema>>();
 
   const [form, setForm] = useState(DEFAULT_FORM_STATE);
+
+  const remainingBaseAmount = form.baseAmount
+    ? parseFloat(form.baseAmount) -
+      form.partials.reduce((accumulator, partial) => {
+        const partialAmount = parseFloat(
+          partial.amount !== "" ? partial.amount : "0",
+        );
+
+        if (partial.type === "flat") {
+          return accumulator + partialAmount;
+        }
+
+        return (
+          accumulator + (partialAmount / 100) * parseFloat(form.baseAmount)
+        );
+      }, 0)
+    : 0;
 
   const bucketOptions = buckets.map((bucket) => ({
     id: bucket.id,
@@ -106,6 +127,30 @@ export default function CreatePartialTransactionsDialog() {
     return <Icon className="absolute left-2 top-1/2 size-5 -translate-y-1/2" />;
   }
 
+  function handleSubmit() {
+    if (remainingBaseAmount <= 0) return;
+
+    const { success, error, data } =
+      createPartialTransactionSchema.safeParse(form);
+
+    if (!success) {
+      setErrors(error.flatten());
+      return;
+    }
+
+    setErrors(undefined);
+
+    formAction({
+      intent: "create-partial-transactions",
+      data,
+    });
+
+    const closeButtonElement = document.querySelector(
+      "button[data-button=close]",
+    ) as HTMLButtonElement;
+    closeButtonElement.click();
+  }
+
   return (
     <>
       <DialogHeader>
@@ -116,24 +161,48 @@ export default function CreatePartialTransactionsDialog() {
           </DialogDescription>
         </DialogHeader>
       </DialogHeader>
-      <form className="grid gap-y-4">
-        <div className="grid gap-y-1.5">
-          <Label htmlFor="baseAmount">Base Amount</Label>
+      <form
+        id="createPartialTransactionsForm"
+        className="grid gap-y-4"
+        action={handleSubmit}
+      >
+        <div className="group grid grid-cols-2 gap-y-1.5">
+          <Label
+            htmlFor="baseAmount"
+            className="group-has-[span]:text-destructive"
+          >
+            Base Amount
+          </Label>
+          {errors?.fieldErrors.baseAmount && (
+            <span className="text-end text-sm font-medium text-destructive">
+              {errors.fieldErrors.baseAmount}
+            </span>
+          )}
           <Input
             type="number"
             name="baseAmount"
             id="baseAmount"
+            className="col-span-full group-has-[span]:border-destructive"
             value={form.baseAmount}
             onChange={handleChange}
           />
         </div>
-        <div className="grid gap-y-1.5">
-          <Label htmlFor="description">
-            Description <small>(optional)</small>
+        <div className="group grid grid-cols-2 gap-y-1.5">
+          <Label
+            htmlFor="description"
+            className="group-has-[span]:text-destructive"
+          >
+            Description
           </Label>
+          {errors?.fieldErrors.description && (
+            <span className="text-end text-sm font-medium text-destructive">
+              {errors.fieldErrors.description}
+            </span>
+          )}
           <Textarea
             name="description"
             id="descripion"
+            className="col-span-full group-has-[span]:border-destructive"
             rows={5}
             value={form.description}
             onChange={handleChange}
@@ -142,7 +211,14 @@ export default function CreatePartialTransactionsDialog() {
         <div className="grid gap-y-1">
           <div className="flex items-center justify-between">
             <Label htmlFor="partials">Partials</Label>
-            <span className="text-sm font-medium">Remaining: $0.00</span>
+            <small className="flex items-center gap-x-2 font-medium">
+              Remaining:
+              <strong
+                className={cn(remainingBaseAmount < 0 && "text-destructive")}
+              >
+                {formatCurrency(remainingBaseAmount)}
+              </strong>
+            </small>
           </div>
           <section className="grid gap-y-4">
             {form.partials.map((partial, index) => (
@@ -209,21 +285,6 @@ export default function CreatePartialTransactionsDialog() {
                   <span className="sr-only">Remove Partial</span>
                   <Trash />
                 </Button>
-                <Textarea
-                  name={`description-${index}`}
-                  id={`description-${index}`}
-                  rows={3}
-                  className="col-start-1 col-end-[-2]"
-                  placeholder="Description"
-                  value={partial.description}
-                  onChange={(event) =>
-                    handlePartialChange({
-                      index,
-                      key: "description",
-                      value: event.target.value,
-                    })
-                  }
-                />
               </article>
             ))}
           </section>
@@ -239,7 +300,13 @@ export default function CreatePartialTransactionsDialog() {
         </div>
       </form>
       <DialogFooter>
-        <Button>Create</Button>
+        <Button
+          type="submit"
+          form="createPartialTransactionsForm"
+          disabled={remainingBaseAmount <= 0}
+        >
+          Create
+        </Button>
       </DialogFooter>
     </>
   );

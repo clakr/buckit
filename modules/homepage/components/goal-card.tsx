@@ -22,9 +22,9 @@ export default function GoalCard({ goal }: Props) {
     ).toFixed(0),
   );
 
-  return (
+  return goal.goal ? (
     <Card className="relative flex flex-col justify-between">
-      <GoalsActionsDropdownMenu />
+      <GoalsActionsDropdownMenu bucketId={goal.goal.bucketId} />
       <CardHeader>
         <CardTitle className="uppercase">{goal.name}</CardTitle>
         <CardDescription>{goal.description}</CardDescription>
@@ -42,5 +42,5 @@ export default function GoalCard({ goal }: Props) {
         </small>
       </CardFooter>
     </Card>
-  );
+  ) : null;
 }

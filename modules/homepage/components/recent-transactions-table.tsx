@@ -7,15 +7,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetchBucketsByUserId } from "@/database/actions/bucket";
-import { SelectTransaction } from "@/database/schema";
+import { selectTransactionSchema } from "@/database/schema";
 import { cn, formatCurrency } from "@/lib/utils";
 import { CircleEqualIcon, CircleMinusIcon, CirclePlusIcon } from "lucide-react";
+import { z } from "zod";
 
 type Props = {
   data: Awaited<ReturnType<typeof fetchBucketsByUserId>>;
 };
 
-function getTransactionTypeIcon(type: SelectTransaction["type"]) {
+function getTransactionTypeIcon(
+  type: z.infer<typeof selectTransactionSchema>["type"],
+) {
   switch (type) {
     case "inbound":
       return <CirclePlusIcon />;
@@ -28,7 +31,9 @@ function getTransactionTypeIcon(type: SelectTransaction["type"]) {
   }
 }
 
-function getTransactionTypeColor(type: SelectTransaction["type"]) {
+function getTransactionTypeColor(
+  type: z.infer<typeof selectTransactionSchema>["type"],
+) {
   switch (type) {
     case "inbound":
       return "[--text-color:theme(colors.green.600)]";

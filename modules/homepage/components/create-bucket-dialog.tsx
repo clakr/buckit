@@ -29,6 +29,7 @@ export default function CreateBucketDialog() {
     }
 
     setErrors(undefined);
+
     formAction({
       intent: "create-bucket",
       data,

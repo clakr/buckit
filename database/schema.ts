@@ -8,7 +8,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
 const timestamps = {
@@ -85,11 +85,15 @@ export const transactionRelations = relations(transaction, ({ one }) => ({
   }),
 }));
 
+export const selectTransactionSchema = createSelectSchema(transaction);
+
 export const createTransactionSchema = createInsertSchema(transaction, {
-  bucketId: z.coerce.number(),
+  bucketId: z.coerce.number().refine((value) => value !== 0, {
+    message: "Bucket is required",
+  }),
   amount: z.coerce
     .number()
-    .gte(1, "Amount must be at least 1")
+    .gte(0.01, "Amount must be at least 0.01")
     .transform((value) => value.toString()),
   description: (schema) =>
     schema
@@ -102,6 +106,61 @@ export const createTransactionSchema = createInsertSchema(transaction, {
 }).partial({
   runningBalance: true,
 });
+
+export const createPartialSchema = createTransactionSchema
+  .pick({ bucketId: true })
+  .extend({
+    type: z.enum(["flat", "percentage"]),
+    amount: z.string().nonempty("Amount is required"),
+  })
+  .refine(
+    (data) => {
+      const parsedAmount = parseFloat(data.amount);
+
+      if (data.type === "flat") {
+        return (
+          !isNaN(parsedAmount) &&
+          parsedAmount >= 0.01 &&
+          parsedAmount <= 999_999_999_999
+        );
+      } else if (data.type === "percentage") {
+        return !isNaN(parsedAmount) && parsedAmount >= 0 && parsedAmount <= 100;
+      }
+
+      return false;
+    },
+    (data) => ({
+      message:
+        data.type === "flat"
+          ? "Flat amount must be between 0.01 and 999,999,999,999."
+          : "Percentage amount must be between 0 and 100.",
+      path: ["amount"],
+    }),
+  );
+
+export const createPartialTransactionSchema = z
+  .object({
+    baseAmount: z.coerce
+      .number()
+      .gte(0.01, "Base amount must be at least 0.01")
+      .max(999_999_999_999, "Base amount reached the maximum value"),
+    description: z.string().nonempty("Description is required"),
+    partials: z.array(createPartialSchema),
+  })
+  .transform((data) => {
+    const transactions: z.arrayOutputType<typeof createTransactionSchema> =
+      data.partials.map((partial) => ({
+        bucketId: partial.bucketId,
+        amount:
+          partial.type === "flat"
+            ? partial.amount
+            : ((data.baseAmount * parseFloat(partial.amount)) / 100).toString(),
+        description: data.description,
+        type: "inbound",
+      }));
+
+    return { ...data, transactions };
+  });
 
 //////////
 // GOAL //
