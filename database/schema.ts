@@ -42,11 +42,10 @@ export const createBucketSchema = createInsertSchema(bucket, {
     schema
       .nonempty("Name is required")
       .max(255, "Name must be at most 255 characters"),
-  // @todo: coerce `totalAmount` to number
-  totalAmount: (schema) =>
-    schema
-      .nonempty("Total amount is required")
-      .max(999_999_999_999, "Total amount reached the maximum value"),
+  totalAmount: z.coerce
+    .number()
+    .max(999_999_999_999, "Total amount reached the maximum value")
+    .transform((value) => value.toString()),
   description: (schema) =>
     schema.max(1000, "Description must be at most 1000 characters"),
 }).partial({
@@ -94,6 +93,7 @@ export const createTransactionSchema = createInsertSchema(transaction, {
   amount: z.coerce
     .number()
     .gte(0.01, "Amount must be at least 0.01")
+    .max(999_999_999_999, "Total amount reached the maximum value")
     .transform((value) => value.toString()),
   description: (schema) =>
     schema
@@ -182,11 +182,10 @@ export const goalRelations = relations(goal, ({ one }) => ({
 }));
 
 export const createGoalSchema = createInsertSchema(goal, {
-  // @todo: coerce `targetAmount` to number
-  targetAmount: (schema) =>
-    schema
-      .nonempty("Target amount is required")
-      .max(999_999_999_999, "Target amount reached the maximum value"),
+  targetAmount: z.coerce
+    .number()
+    .max(999_999_999_999, "Target amount reached the maximum value")
+    .transform((value) => value.toString()),
 });
 
 export const createBucketGoalSchema = createBucketSchema

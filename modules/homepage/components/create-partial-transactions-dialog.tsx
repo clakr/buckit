@@ -17,6 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { createPartialTransactionSchema } from "@/database/schema";
 import { cn, formatCurrency } from "@/lib/utils";
+import { FieldErrors } from "@/modules/homepage/components/field-errors";
 import { useFormAction } from "@/modules/homepage/use-form-action";
 import { Banknote, Percent, PlusCircle, Trash } from "lucide-react";
 import { ChangeEvent, useState } from "react";
@@ -46,7 +47,6 @@ const DEFAULT_FORM_STATE: Form = {
   ],
 };
 
-// @todo: add visual indicators for partial errors
 export default function CreatePartialTransactionsDialog() {
   const { buckets, formAction } = useFormAction();
   const [errors, setErrors] =
@@ -166,47 +166,39 @@ export default function CreatePartialTransactionsDialog() {
         className="grid gap-y-4"
         action={handleSubmit}
       >
-        <div className="group grid grid-cols-2 gap-y-1.5">
+        <div className="group grid gap-y-1.5">
           <Label
             htmlFor="baseAmount"
-            className="group-has-[span]:text-destructive"
+            className="group-has-[ul]:text-destructive"
           >
             Base Amount
           </Label>
-          {errors?.fieldErrors.baseAmount && (
-            <span className="text-end text-sm font-medium text-destructive">
-              {errors.fieldErrors.baseAmount}
-            </span>
-          )}
           <Input
             type="number"
             name="baseAmount"
             id="baseAmount"
-            className="col-span-full group-has-[span]:border-destructive"
+            className="group-has-[ul]:border-destructive"
             value={form.baseAmount}
             onChange={handleChange}
           />
+          <FieldErrors errors={errors?.fieldErrors.baseAmount} />
         </div>
-        <div className="group grid grid-cols-2 gap-y-1.5">
+        <div className="group grid gap-y-1.5">
           <Label
             htmlFor="description"
-            className="group-has-[span]:text-destructive"
+            className="group-has-[ul]:text-destructive"
           >
             Description
           </Label>
-          {errors?.fieldErrors.description && (
-            <span className="text-end text-sm font-medium text-destructive">
-              {errors.fieldErrors.description}
-            </span>
-          )}
           <Textarea
             name="description"
             id="descripion"
-            className="col-span-full group-has-[span]:border-destructive"
+            className="group-has-[ul]:border-destructive"
             rows={5}
             value={form.description}
             onChange={handleChange}
           />
+          <FieldErrors errors={errors?.fieldErrors.description} />
         </div>
         <div className="grid gap-y-1">
           <div className="flex items-center justify-between">
@@ -287,6 +279,7 @@ export default function CreatePartialTransactionsDialog() {
                 </Button>
               </article>
             ))}
+            <FieldErrors errors={errors?.fieldErrors.partials} />
           </section>
           <Button
             type="button"

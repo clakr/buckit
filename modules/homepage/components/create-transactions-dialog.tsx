@@ -1,4 +1,3 @@
-import { useFormAction } from "../use-form-action";
 import { Button } from "@/components/ui/button";
 import {
   DialogHeader,
@@ -11,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { createTransactionSchema } from "@/database/schema";
+import { FieldErrors } from "@/modules/homepage/components/field-errors";
+import { useFormAction } from "@/modules/homepage/use-form-action";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -62,46 +63,38 @@ export function CreateTransactionsDialog({ bucketId }: Props) {
         action={handleSubmit}
       >
         <input type="hidden" name="bucketId" value={bucketId} />
-        <div className="group grid grid-cols-2 gap-y-1.5">
-          <Label htmlFor="amount">Amount</Label>
-          {errors?.fieldErrors.amount ? (
-            <span className="text-end text-xs font-medium text-destructive">
-              {errors.fieldErrors.amount}
-            </span>
-          ) : null}
+        <div className="group grid gap-y-1.5">
+          <Label htmlFor="amount" className="group-has-[ul]:text-destructive">
+            Amount
+          </Label>
           <Input
             type="number"
             name="amount"
             id="amount"
-            className="col-span-full group-has-[span]:border-destructive"
+            className="group-has-[ul]:border-destructive"
           />
+          <FieldErrors errors={errors?.fieldErrors.amount} />
         </div>
-        <div className="group grid grid-cols-2 gap-y-1.5">
-          <Label htmlFor="description">Description</Label>
-          {errors?.fieldErrors.description ? (
-            <span className="text-end text-xs font-medium text-destructive">
-              {errors.fieldErrors.description}
-            </span>
-          ) : null}
+        <div className="group grid gap-y-1.5">
+          <Label
+            htmlFor="description"
+            className="group-has-[ul]:text-destructive"
+          >
+            Description
+          </Label>
           <Textarea
             name="description"
             id="description"
             rows={5}
-            className="col-span-full group-has-[span]:border-destructive"
+            className="group-has-[ul]:border-destructive"
           />
+          <FieldErrors errors={errors?.fieldErrors.description} />
         </div>
-        <div className="group grid grid-cols-2 gap-y-3">
-          <Label htmlFor="type">Type</Label>
-          {errors?.fieldErrors.type ? (
-            <span className="text-end text-xs font-medium text-destructive">
-              {errors.fieldErrors.type}
-            </span>
-          ) : null}
-          <RadioGroup
-            defaultValue="inbound"
-            name="type"
-            className="col-span-full"
-          >
+        <div className="group grid gap-y-3">
+          <Label htmlFor="type" className="group-has-[ul]:text-destructive">
+            Type
+          </Label>
+          <RadioGroup defaultValue="inbound" name="type">
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="inbound" id="inbound" />
               <Label htmlFor="inbound">Inbound</Label>
@@ -111,6 +104,7 @@ export function CreateTransactionsDialog({ bucketId }: Props) {
               <Label htmlFor="outbound">Outbound</Label>
             </div>
           </RadioGroup>
+          <FieldErrors errors={errors?.fieldErrors.type} />
         </div>
       </form>
       <DialogFooter>
