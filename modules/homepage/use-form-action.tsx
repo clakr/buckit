@@ -1,4 +1,8 @@
-import { createBucket, fetchBucketsByUserId } from "@/database/actions/bucket";
+import {
+  createBucket,
+  fetchBucketsByUserId,
+  updateBucket,
+} from "@/database/actions/bucket";
 import { createGoal } from "@/database/actions/goal";
 import { createTransaction } from "@/database/actions/transaction";
 import {
@@ -6,6 +10,7 @@ import {
   createBucketSchema,
   createPartialTransactionSchema,
   createTransactionSchema,
+  updateBucketSchema,
 } from "@/database/schema";
 import {
   createContext,
@@ -31,6 +36,10 @@ type FormActionArgs =
   | {
       intent: "create-partial-transactions";
       data: z.infer<typeof createPartialTransactionSchema>;
+    }
+  | {
+      intent: "update-bucket";
+      data: z.infer<typeof updateBucketSchema>;
     };
 
 export const FormActionContext = createContext<
@@ -51,10 +60,19 @@ export function FormActionProvider({
     ReturnType<typeof fetchBucketsByUserId>,
     FormActionArgs
   >(async (initialState, { intent, data }) => {
+    ///////////////////
+    // CREATE-BUCKET //
+    ///////////////////
     if (intent === "create-bucket") {
       const newBucket = await createBucket(data);
+
       return [...initialState, newBucket];
-    } else if (intent === "create-goal") {
+    }
+
+    /////////////////
+    // CREATE-GOAL //
+    /////////////////
+    else if (intent === "create-goal") {
       const newBucket = await createBucket({
         name: data.name,
         totalAmount: data.totalAmount,
@@ -67,17 +85,32 @@ export function FormActionProvider({
       });
 
       return [...initialState, { ...newBucket, goal: newGoal }];
-    } else if (intent === "create-transaction") {
-      const { bucket, transaction } = await createTransaction(data);
+    }
 
-      const bucketIndex = initialState.findIndex((b) => bucket.id === b.id);
-      const bucketTransactions = initialState[bucketIndex].transactions;
+    ////////////////////////
+    // CREATE-TRANSACTION //
+    ////////////////////////
+    else if (intent === "create-transaction") {
+      const { bucket: newBucket, transaction: newTransaction } =
+        await createTransaction(data);
+
+      const bucketIndex = initialState.findIndex((b) => newBucket.id === b.id);
+
+      const transactions = [
+        ...initialState[bucketIndex].transactions,
+        newTransaction,
+      ];
 
       return initialState.with(bucketIndex, {
-        ...bucket,
-        transactions: [...bucketTransactions, transaction],
+        ...newBucket,
+        transactions,
       });
-    } else if (intent === "create-partial-transactions") {
+    }
+
+    /////////////////////////////////
+    // CREATE-PARTIAL-TRANSACTIONS //
+    /////////////////////////////////
+    else if (intent === "create-partial-transactions") {
       // @monitoring
       const createdTransactions = await Promise.all(
         data.transactions.map(
@@ -87,13 +120,36 @@ export function FormActionProvider({
 
       return createdTransactions.reduce((previous, { bucket, transaction }) => {
         const bucketIndex = initialState.findIndex((b) => bucket.id === b.id);
-        const bucketTransactions = initialState[bucketIndex].transactions;
+
+        const transactions = [
+          ...initialState[bucketIndex].transactions,
+          transaction,
+        ];
 
         return previous.with(bucketIndex, {
           ...bucket,
-          transactions: [...bucketTransactions, transaction],
+          transactions,
         });
       }, initialState);
+    }
+
+    ///////////////////
+    // UPDATE-BUCKET //
+    ///////////////////
+    else if (intent === "update-bucket") {
+      const updatedBucket = await updateBucket(data);
+
+      const bucketIndex = initialState.findIndex(
+        (b) => updatedBucket.id === b.id,
+      );
+
+      const transactions = initialState[bucketIndex].transactions;
+
+      return initialState.with(bucketIndex, {
+        ...updatedBucket,
+        transactions,
+        goal: null,
+      });
     }
 
     return initialState;

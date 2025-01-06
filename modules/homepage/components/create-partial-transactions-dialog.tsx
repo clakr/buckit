@@ -17,7 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { createPartialTransactionSchema } from "@/database/schema";
 import { cn, formatCurrency } from "@/lib/utils";
-import { FieldErrors } from "@/modules/homepage/components/field-errors";
+import FieldErrors from "@/modules/homepage/components/field-errors";
 import { useFormAction } from "@/modules/homepage/use-form-action";
 import { Banknote, Percent, PlusCircle, Trash } from "lucide-react";
 import { ChangeEvent, useState } from "react";

@@ -2,7 +2,7 @@ type Props = {
   errors: string[] | undefined;
 };
 
-export function FieldErrors({ errors }: Props) {
+export default function FieldErrors({ errors }: Props) {
   if (!errors) return null;
 
   return (

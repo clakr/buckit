@@ -8,7 +8,11 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
 import { z } from "zod";
 
 const timestamps = {
@@ -50,6 +54,12 @@ export const createBucketSchema = createInsertSchema(bucket, {
     schema.max(1000, "Description must be at most 1000 characters"),
 }).partial({
   userId: true,
+});
+
+export const updateBucketSchema = createUpdateSchema(bucket).extend({
+  id: z.coerce.number().refine((value) => value !== 0, {
+    message: "Bucket is required",
+  }),
 });
 
 /////////////////

@@ -7,8 +7,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createTransactionSchema } from "@/database/schema";
-import { CreateTransactionsDialog } from "@/modules/homepage/components/create-transactions-dialog";
-import { FileText, MoreVertical } from "lucide-react";
+import CreateTransactionsDialog from "@/modules/homepage/components/create-transactions-dialog";
+import UpdateBucketDialog from "@/modules/homepage/components/update-bucket-dialog";
+import { FileText, MoreVertical, Pencil } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -16,7 +17,7 @@ type Props = {
   bucketId: z.infer<typeof createTransactionSchema>["bucketId"];
 };
 
-type Dialog = "create-transaction";
+type Dialog = "create-transaction" | "update-bucket";
 
 export default function BucketsActionsDropdownMenu({ bucketId }: Props) {
   const [dialogContent, setDialogContent] =
@@ -25,6 +26,8 @@ export default function BucketsActionsDropdownMenu({ bucketId }: Props) {
   function DialogState() {
     if (dialogContent === "create-transaction")
       return <CreateTransactionsDialog bucketId={bucketId} />;
+    else if (dialogContent === "update-bucket")
+      return <UpdateBucketDialog bucketId={bucketId} />;
   }
 
   return (
@@ -47,6 +50,15 @@ export default function BucketsActionsDropdownMenu({ bucketId }: Props) {
             <DropdownMenuItem>
               <FileText />
               Create Transaction
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogTrigger
+            onClick={() => setDialogContent("update-bucket")}
+            asChild
+          >
+            <DropdownMenuItem>
+              <Pencil />
+              Update Bucket
             </DropdownMenuItem>
           </DialogTrigger>
         </DropdownMenuContent>
