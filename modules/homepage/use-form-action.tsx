@@ -3,13 +3,14 @@ import {
   fetchBucketsByUserId,
   updateBucket,
 } from "@/database/actions/bucket";
-import { createGoal } from "@/database/actions/goal";
+import { createGoal, updateGoal } from "@/database/actions/goal";
 import { createTransaction } from "@/database/actions/transaction";
 import {
   createBucketGoalSchema,
   createBucketSchema,
   createPartialTransactionSchema,
   createTransactionSchema,
+  updateBucketGoalSchema,
   updateBucketSchema,
 } from "@/database/schema";
 import {
@@ -40,6 +41,10 @@ type FormActionArgs =
   | {
       intent: "update-bucket";
       data: z.infer<typeof updateBucketSchema>;
+    }
+  | {
+      intent: "update-goal";
+      data: z.infer<typeof updateBucketGoalSchema>;
     };
 
 export const FormActionContext = createContext<
@@ -149,6 +154,36 @@ export function FormActionProvider({
         ...updatedBucket,
         transactions,
         goal: null,
+      });
+    }
+
+    /////////////////
+    // UPDATE-GOAL //
+    /////////////////
+    else if (intent === "update-goal") {
+      const updatedBucket = await updateBucket({
+        id: data.bucketId,
+        name: data.name,
+        totalAmount: data.totalAmount,
+        description: data.description,
+      });
+
+      const updatedGoal = await updateGoal({
+        id: data.id,
+        bucketId: data.bucketId,
+        targetAmount: data.targetAmount,
+      });
+
+      const bucketIndex = initialState.findIndex(
+        (b) => updatedBucket.id === b.id,
+      );
+
+      const transactions = initialState[bucketIndex].transactions;
+
+      return initialState.with(bucketIndex, {
+        ...updatedBucket,
+        goal: updatedGoal,
+        transactions,
       });
     }
 

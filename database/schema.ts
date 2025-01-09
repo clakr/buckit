@@ -198,6 +198,16 @@ export const createGoalSchema = createInsertSchema(goal, {
     .transform((value) => value.toString()),
 });
 
+export const updateGoalSchema = createUpdateSchema(goal, {
+  bucketId: z.coerce.number().refine((value) => value !== 0, {
+    message: "Bucket is required",
+  }),
+}).extend({
+  id: z.coerce.number().refine((value) => value !== 0, {
+    message: "Goal is required",
+  }),
+});
+
 export const createBucketGoalSchema = createBucketSchema
   .merge(createGoalSchema)
   .partial({
@@ -216,3 +226,9 @@ export const createBucketGoalSchema = createBucketSchema
       path: ["targetAmount"],
     },
   );
+
+export const updateBucketGoalSchema =
+  updateBucketSchema.merge(updateGoalSchema);
+
+type Foo = z.infer<typeof createGoalSchema>;
+type Bar = z.infer<typeof updateGoalSchema>;

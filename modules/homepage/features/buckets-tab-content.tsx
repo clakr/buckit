@@ -29,7 +29,9 @@ export default function BucketsTabContent() {
             <BucketsActionsDropdownMenu bucketId={bucket.id} />
             <CardHeader>
               <CardTitle className="uppercase">{bucket.name}</CardTitle>
-              <CardDescription>{bucket.description}</CardDescription>
+              <CardDescription className="whitespace-break-spaces">
+                {bucket.description}
+              </CardDescription>
             </CardHeader>
             <CardFooter className="justify-end font-bold">
               {formatCurrency(bucket.totalAmount)}

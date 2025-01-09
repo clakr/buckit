@@ -1,3 +1,4 @@
+import UpdateGoalDialog from "./update-goal-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -8,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { createTransactionSchema } from "@/database/schema";
 import CreateTransactionsDialog from "@/modules/homepage/components/create-transactions-dialog";
-import { FileText, MoreVertical } from "lucide-react";
+import { FileText, MoreVertical, Pencil } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -16,7 +17,7 @@ type Props = {
   bucketId: z.infer<typeof createTransactionSchema>["bucketId"];
 };
 
-type Dialog = "create-transaction";
+type Dialog = "create-transaction" | "update-goal";
 
 export default function GoalsActionsDropdownMenu({ bucketId }: Props) {
   const [dialogContent, setDialogContent] =
@@ -25,6 +26,8 @@ export default function GoalsActionsDropdownMenu({ bucketId }: Props) {
   function DialogState() {
     if (dialogContent === "create-transaction")
       return <CreateTransactionsDialog bucketId={bucketId} />;
+    else if (dialogContent === "update-goal")
+      return <UpdateGoalDialog bucketId={bucketId} />;
   }
 
   return (
@@ -47,6 +50,15 @@ export default function GoalsActionsDropdownMenu({ bucketId }: Props) {
             <DropdownMenuItem>
               <FileText />
               Create Transaction
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogTrigger
+            onClick={() => setDialogContent("update-goal")}
+            asChild
+          >
+            <DropdownMenuItem>
+              <Pencil />
+              Update Goal
             </DropdownMenuItem>
           </DialogTrigger>
         </DropdownMenuContent>

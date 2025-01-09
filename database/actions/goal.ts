@@ -1,7 +1,8 @@
 "use server";
 
 import { db } from "@/database";
-import { createGoalSchema, goal } from "@/database/schema";
+import { createGoalSchema, goal, updateGoalSchema } from "@/database/schema";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 export async function createGoal(goalData: z.infer<typeof createGoalSchema>) {
@@ -14,4 +15,16 @@ export async function createGoal(goalData: z.infer<typeof createGoalSchema>) {
     .returning();
 
   return newGoal;
+}
+
+export async function updateGoal(goalData: z.infer<typeof updateGoalSchema>) {
+  const [updatedGoal] = await db
+    .update(goal)
+    .set({
+      targetAmount: goalData.targetAmount,
+    })
+    .where(eq(goal.id, goalData.id))
+    .returning();
+
+  return updatedGoal;
 }

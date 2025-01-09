@@ -27,7 +27,9 @@ export default function GoalCard({ goal }: Props) {
       <GoalsActionsDropdownMenu bucketId={goal.goal.bucketId} />
       <CardHeader>
         <CardTitle className="uppercase">{goal.name}</CardTitle>
-        <CardDescription>{goal.description}</CardDescription>
+        <CardDescription className="whitespace-break-spaces">
+          {goal.description}
+        </CardDescription>
       </CardHeader>
       <CardFooter className="grid gap-y-1">
         <div className="flex items-center justify-between">
