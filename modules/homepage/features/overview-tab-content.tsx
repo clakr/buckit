@@ -7,24 +7,30 @@ import { Coins, Goal, PiggyBank } from "lucide-react";
 export default function OverviewTabContent() {
   const { buckets } = useFormAction();
 
-  const totalAccumulated = buckets.reduce(
-    (previous, current) => previous + parseFloat(current.totalAmount),
-    0,
-  );
+  const totalAccumulated = buckets.reduce((accumulator, bucket) => {
+    const totalAmount = parseFloat(bucket.totalAmount);
+    if (totalAmount < 0) return accumulator;
+
+    return accumulator + totalAmount;
+  }, 0);
 
   const totalBucketsAmount = buckets
     .filter((bucket) => !bucket.goal)
-    .reduce(
-      (previous, current) => previous + parseFloat(current.totalAmount),
-      0,
-    );
+    .reduce((accumulator, bucket) => {
+      const totalAmount = parseFloat(bucket.totalAmount);
+      if (totalAmount < 0) return accumulator;
+
+      return accumulator + totalAmount;
+    }, 0);
 
   const totalGoalsAmount = buckets
     .filter((bucket) => bucket.goal)
-    .reduce(
-      (previous, current) => previous + parseFloat(current.totalAmount),
-      0,
-    );
+    .reduce((accumulator, bucket) => {
+      const totalAmount = parseFloat(bucket.totalAmount);
+      if (totalAmount < 0) return accumulator;
+
+      return accumulator + totalAmount;
+    }, 0);
 
   return (
     <TabsContent value="overview">
