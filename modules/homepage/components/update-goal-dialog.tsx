@@ -19,11 +19,10 @@ import { useState } from "react";
 import { z } from "zod";
 
 type Props = {
-  id: z.infer<typeof updateBucketGoalSchema>["id"];
-  bucketId: z.infer<typeof updateBucketGoalSchema>["bucketId"];
+  bucketId: number;
 };
 
-export default function UpdateGoalDialog({ id, bucketId }: Props) {
+export default function UpdateGoalDialog({ bucketId }: Props) {
   const { buckets, formAction } = useFormAction();
 
   const goal = buckets.find((bucket) => bucketId === bucket.id);

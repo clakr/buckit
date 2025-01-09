@@ -7,14 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { createTransactionSchema } from "@/database/schema";
 import CreateTransactionsDialog from "@/modules/homepage/components/create-transactions-dialog";
 import { FileText, MoreVertical, Pencil } from "lucide-react";
 import { useState } from "react";
-import { z } from "zod";
 
 type Props = {
-  bucketId: z.infer<typeof createTransactionSchema>["bucketId"];
+  bucketId: number;
 };
 
 type Dialog = "create-transaction" | "update-goal";
