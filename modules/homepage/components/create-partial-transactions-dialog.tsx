@@ -10,7 +10,10 @@ import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -20,7 +23,7 @@ import { cn, formatCurrency } from "@/lib/utils";
 import FieldErrors from "@/modules/homepage/components/field-errors";
 import { useFormAction } from "@/modules/homepage/use-form-action";
 import { Banknote, Percent, PlusCircle, Trash } from "lucide-react";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Fragment, useState } from "react";
 import { z } from "zod";
 
 type Form = {
@@ -33,6 +36,11 @@ type Partial = {
   bucketId: string;
   type: "flat" | "percentage";
   amount: string;
+};
+
+type SelectOption = {
+  id: string;
+  name: string;
 };
 
 const DEFAULT_FORM_STATE: Form = {
@@ -71,10 +79,21 @@ export default function CreatePartialTransactionsDialog() {
       }, 0)
     : 0;
 
-  const bucketOptions = buckets.map((bucket) => ({
-    id: bucket.id,
-    name: bucket.name,
-  }));
+  const selectOptions = buckets.reduce<{
+    buckets: SelectOption[];
+    goals: SelectOption[];
+  }>(
+    (accumulator, bucket) => {
+      const modelKey = bucket.goal ? "goals" : "buckets";
+
+      accumulator[modelKey].push({
+        id: bucket.id.toString(),
+        name: bucket.name,
+      });
+      return accumulator;
+    },
+    { buckets: [], goals: [] },
+  );
 
   function handleChange<T extends HTMLInputElement | HTMLTextAreaElement>(
     event: ChangeEvent<T>,
@@ -149,6 +168,31 @@ export default function CreatePartialTransactionsDialog() {
       "button[data-button=close]",
     ) as HTMLButtonElement;
     closeButtonElement.click();
+  }
+
+  function BucketsGoalsSelectContent() {
+    const selectOptionsEntries = Object.entries(selectOptions);
+    const selectOptionsLength = Object.keys(selectOptions).length;
+
+    return (
+      <SelectContent>
+        <SelectGroup>
+          {selectOptionsEntries.map(([key, options], index) => (
+            <Fragment key={key}>
+              <SelectLabel className="capitalize">{key}</SelectLabel>
+
+              {options.map((option) => (
+                <SelectItem key={option.id} value={option.id}>
+                  {option.name}
+                </SelectItem>
+              ))}
+
+              {index + 1 !== selectOptionsLength ? <SelectSeparator /> : null}
+            </Fragment>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    );
   }
 
   return (
@@ -227,13 +271,7 @@ export default function CreatePartialTransactionsDialog() {
                   <SelectTrigger>
                     <SelectValue placeholder="Bucket" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {bucketOptions.map((option) => (
-                      <SelectItem key={option.id} value={option.id.toString()}>
-                        {option.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                  <BucketsGoalsSelectContent />
                 </Select>
                 <Select
                   value={partial.type}

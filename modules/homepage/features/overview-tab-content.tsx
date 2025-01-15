@@ -14,23 +14,23 @@ export default function OverviewTabContent() {
     return accumulator + totalAmount;
   }, 0);
 
-  const totalBucketsAmount = buckets
-    .filter((bucket) => !bucket.goal)
-    .reduce((accumulator, bucket) => {
-      const totalAmount = parseFloat(bucket.totalAmount);
-      if (totalAmount < 0) return accumulator;
+  const totalBucketsAmount = buckets.reduce((accumulator, bucket) => {
+    if (bucket.goal) return accumulator;
 
-      return accumulator + totalAmount;
-    }, 0);
+    const totalAmount = parseFloat(bucket.totalAmount);
+    if (totalAmount < 0) return accumulator;
 
-  const totalGoalsAmount = buckets
-    .filter((bucket) => bucket.goal)
-    .reduce((accumulator, bucket) => {
-      const totalAmount = parseFloat(bucket.totalAmount);
-      if (totalAmount < 0) return accumulator;
+    return accumulator + totalAmount;
+  }, 0);
 
-      return accumulator + totalAmount;
-    }, 0);
+  const totalGoalsAmount = buckets.reduce((accumulator, bucket) => {
+    if (!bucket.goal) return accumulator;
+
+    const totalAmount = parseFloat(bucket.totalAmount);
+    if (totalAmount < 0) return accumulator;
+
+    return accumulator + totalAmount;
+  }, 0);
 
   return (
     <TabsContent value="overview">
