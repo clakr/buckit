@@ -8,19 +8,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createBucketGoalSchema } from "@/database/schema";
+import { convertBucketToGoalSchema } from "@/database/schema";
 import FieldErrors from "@/modules/homepage/components/field-errors";
 import { useFormAction } from "@/modules/homepage/use-form-action";
 import { useState } from "react";
 import { z } from "zod";
 
-export default function CreateGoalDialog() {
+type Props = {
+  bucketId: number;
+};
+
+export default function ConvertBucketToGoal({ bucketId }: Props) {
   const { formAction } = useFormAction();
   const [errors, setErrors] =
-    useState<z.inferFlattenedErrors<typeof createBucketGoalSchema>>();
+    useState<z.inferFlattenedErrors<typeof convertBucketToGoalSchema>>();
 
   function handleSubmit(formData: FormData) {
-    const { success, error, data } = createBucketGoalSchema.safeParse(
+    const { success, error, data } = convertBucketToGoalSchema.safeParse(
       Object.fromEntries(formData),
     );
 
@@ -32,7 +36,7 @@ export default function CreateGoalDialog() {
     setErrors(undefined);
 
     formAction({
-      intent: "create-goal",
+      intent: "convert-bucket-to-goal",
       data,
     });
 
@@ -46,40 +50,14 @@ export default function CreateGoalDialog() {
     <>
       <DialogHeader>
         <DialogHeader>
-          <DialogTitle>Create Goal</DialogTitle>
+          <DialogTitle>Convert Bucket To Goal</DialogTitle>
           <DialogDescription>
-            Input details below to create a new goal.
+            Input details below to convert this bucket to goal
           </DialogDescription>
         </DialogHeader>
       </DialogHeader>
       <form id="createGoalForm" className="grid gap-y-4" action={handleSubmit}>
-        <div className="group grid gap-y-1.5">
-          <Label htmlFor="name" className="group-has-[ul]:text-destructive">
-            Name
-          </Label>
-          <Input
-            type="text"
-            name="name"
-            id="name"
-            className="group-has-[ul]:border-destructive"
-          />
-          <FieldErrors errors={errors?.fieldErrors.name} />
-        </div>
-        <div className="group grid gap-y-1.5">
-          <Label
-            htmlFor="initialAmount"
-            className="group-has-[ul]:text-destructive"
-          >
-            Initial Amount
-          </Label>
-          <Input
-            type="number"
-            name="totalAmount"
-            id="initialAmount"
-            className="group-has-[ul]:border-destructive"
-          />
-          <FieldErrors errors={errors?.fieldErrors.totalAmount} />
-        </div>
+        <input type="hidden" name="bucketId" value={bucketId} />
         <div className="group grid gap-y-1.5">
           <Label
             htmlFor="targetAmount"
@@ -94,21 +72,6 @@ export default function CreateGoalDialog() {
             className="group-has-[ul]:border-destructive"
           />
           <FieldErrors errors={errors?.fieldErrors.targetAmount} />
-        </div>
-        <div className="group grid gap-y-1.5">
-          <Label
-            htmlFor="description"
-            className="group-has-[ul]:text-destructive"
-          >
-            Description <small>(optional)</small>
-          </Label>
-          <Textarea
-            name="description"
-            id="description"
-            rows={5}
-            className="group-has-[ul]:border-destructive"
-          />
-          <FieldErrors errors={errors?.fieldErrors.description} />
         </div>
       </form>
       <DialogFooter>

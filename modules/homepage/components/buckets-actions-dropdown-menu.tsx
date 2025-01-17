@@ -7,9 +7,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createTransactionSchema } from "@/database/schema";
+import ConvertBucketToGoal from "@/modules/homepage/components/convert-bucket-to-goal-dialog";
 import CreateTransactionsDialog from "@/modules/homepage/components/create-transactions-dialog";
 import UpdateBucketDialog from "@/modules/homepage/components/update-bucket-dialog";
-import { FileText, MoreVertical, Pencil } from "lucide-react";
+import { FileText, MoreVertical, Pencil, PiggyBank } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -17,7 +18,7 @@ type Props = {
   bucketId: z.infer<typeof createTransactionSchema>["bucketId"];
 };
 
-type Dialog = "create-transaction" | "update-bucket";
+type Dialog = "create-transaction" | "update-bucket" | "convert-bucket-to-goal";
 
 export default function BucketsActionsDropdownMenu({ bucketId }: Props) {
   const [dialogContent, setDialogContent] =
@@ -28,6 +29,8 @@ export default function BucketsActionsDropdownMenu({ bucketId }: Props) {
       return <CreateTransactionsDialog bucketId={bucketId} />;
     else if (dialogContent === "update-bucket")
       return <UpdateBucketDialog bucketId={bucketId} />;
+    else if (dialogContent === "convert-bucket-to-goal")
+      return <ConvertBucketToGoal bucketId={bucketId} />;
   }
 
   return (
@@ -59,6 +62,15 @@ export default function BucketsActionsDropdownMenu({ bucketId }: Props) {
             <DropdownMenuItem>
               <Pencil />
               Update Bucket
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogTrigger
+            onClick={() => setDialogContent("convert-bucket-to-goal")}
+            asChild
+          >
+            <DropdownMenuItem>
+              <PiggyBank />
+              Convert To Goal
             </DropdownMenuItem>
           </DialogTrigger>
         </DropdownMenuContent>

@@ -216,8 +216,18 @@ export const convertGoalToBucketSchema = z.object({
   }),
 });
 
-type Foo = z.infer<typeof convertGoalToBucketSchema>;
-type Bar = z.infer<typeof updateGoalSchema>;
+export const convertBucketToGoalSchema = createInsertSchema(goal, {
+  bucketId: z.coerce.number().refine((value) => value !== 0, {
+    message: "Bucket is required",
+  }),
+  targetAmount: z.coerce
+    .number()
+    .max(999_999_999_999, "Target amount reached the maximum value")
+    .transform((value) => value.toString()),
+});
+
+type Foo = z.infer<typeof convertBucketToGoalSchema>;
+type Bar = z.infer<typeof createGoalSchema>;
 
 export const createBucketGoalSchema = createBucketSchema
   .merge(createGoalSchema)

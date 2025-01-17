@@ -15,7 +15,7 @@ import { useState } from "react";
 import { z } from "zod";
 
 type Props = {
-  bucketId: z.infer<typeof updateBucketSchema>["id"];
+  bucketId: number;
 };
 
 export default function UpdateBucketDialog({ bucketId }: Props) {
