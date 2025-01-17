@@ -3,9 +3,14 @@ import {
   fetchBucketsByUserId,
   updateBucket,
 } from "@/database/actions/bucket";
-import { createGoal, updateGoal } from "@/database/actions/goal";
+import {
+  convertGoalToBucket,
+  createGoal,
+  updateGoal,
+} from "@/database/actions/goal";
 import { createTransaction } from "@/database/actions/transaction";
 import {
+  convertGoalToBucketSchema,
   createBucketGoalSchema,
   createBucketSchema,
   createPartialTransactionSchema,
@@ -45,6 +50,10 @@ type FormActionArgs =
   | {
       intent: "update-goal";
       data: z.infer<typeof updateBucketGoalSchema>;
+    }
+  | {
+      intent: "convert-goal-to-bucket";
+      data: z.infer<typeof convertGoalToBucketSchema>;
     };
 
 export const FormActionContext = createContext<
@@ -184,6 +193,22 @@ export function FormActionProvider({
         ...updatedBucket,
         goal: updatedGoal,
         transactions,
+      });
+    }
+
+    ////////////////////////////
+    // CONVERT-GOAL-TO-BUCKET //
+    ////////////////////////////
+    else if (intent === "convert-goal-to-bucket") {
+      const updatedGoal = await convertGoalToBucket(data);
+
+      const bucketIndex = initialState.findIndex(
+        (b) => updatedGoal.bucketId === b.id,
+      );
+
+      return initialState.with(bucketIndex, {
+        ...initialState[bucketIndex],
+        goal: null,
       });
     }
 

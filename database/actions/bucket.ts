@@ -15,13 +15,18 @@ export async function fetchBucketsByUserId() {
   const { userId } = await auth();
   if (!userId) throw new Error("no userId");
 
-  const buckets = await db.query.bucket.findMany({
+  const bucketsData = await db.query.bucket.findMany({
     where: (bucket, { eq }) => eq(bucket.userId, userId),
     with: {
       transactions: true,
       goal: true,
     },
   });
+
+  const buckets = bucketsData.map((bucket) => ({
+    ...bucket,
+    goal: bucket.goal && bucket.goal.isDeleted === false ? bucket.goal : null,
+  }));
 
   return buckets;
 }

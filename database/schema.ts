@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   decimal,
   integer,
   pgEnum,
@@ -182,6 +183,7 @@ export const goal = pgTable("goals", {
     .references(() => bucket.id)
     .notNull(),
   targetAmount: decimal("target_amount", { precision: 12, scale: 2 }).notNull(),
+  isDeleted: boolean("is_deleted").default(false),
 });
 
 export const goalRelations = relations(goal, ({ one }) => ({
@@ -208,6 +210,15 @@ export const updateGoalSchema = createUpdateSchema(goal, {
   }),
 });
 
+export const convertGoalToBucketSchema = z.object({
+  id: z.coerce.number().refine((value) => value !== 0, {
+    message: "Goal is required",
+  }),
+});
+
+type Foo = z.infer<typeof convertGoalToBucketSchema>;
+type Bar = z.infer<typeof updateGoalSchema>;
+
 export const createBucketGoalSchema = createBucketSchema
   .merge(createGoalSchema)
   .partial({
@@ -229,6 +240,3 @@ export const createBucketGoalSchema = createBucketSchema
 
 export const updateBucketGoalSchema =
   updateBucketSchema.merge(updateGoalSchema);
-
-type Foo = z.infer<typeof createGoalSchema>;
-type Bar = z.infer<typeof updateGoalSchema>;

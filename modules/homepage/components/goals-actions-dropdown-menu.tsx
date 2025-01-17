@@ -1,4 +1,3 @@
-import UpdateGoalDialog from "./update-goal-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -7,17 +6,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ConvertGoalToBucketDialog from "@/modules/homepage/components/convert-goal-to-bucket-dialog";
 import CreateTransactionsDialog from "@/modules/homepage/components/create-transactions-dialog";
-import { FileText, MoreVertical, Pencil } from "lucide-react";
+import UpdateGoalDialog from "@/modules/homepage/components/update-goal-dialog";
+import { Coins, FileText, MoreVertical, Pencil } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
   bucketId: number;
+  goalId: number;
 };
 
-type Dialog = "create-transaction" | "update-goal";
+type Dialog = "create-transaction" | "update-goal" | "convert-goal-to-bucket";
 
-export default function GoalsActionsDropdownMenu({ bucketId }: Props) {
+export default function GoalsActionsDropdownMenu({ bucketId, goalId }: Props) {
   const [dialogContent, setDialogContent] =
     useState<Dialog>("create-transaction");
 
@@ -26,6 +28,8 @@ export default function GoalsActionsDropdownMenu({ bucketId }: Props) {
       return <CreateTransactionsDialog bucketId={bucketId} />;
     else if (dialogContent === "update-goal")
       return <UpdateGoalDialog bucketId={bucketId} />;
+    else if (dialogContent === "convert-goal-to-bucket")
+      return <ConvertGoalToBucketDialog goalId={goalId} />;
   }
 
   return (
@@ -57,6 +61,15 @@ export default function GoalsActionsDropdownMenu({ bucketId }: Props) {
             <DropdownMenuItem>
               <Pencil />
               Update Goal
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogTrigger
+            onClick={() => setDialogContent("convert-goal-to-bucket")}
+            asChild
+          >
+            <DropdownMenuItem>
+              <Coins />
+              Convert to Bucket
             </DropdownMenuItem>
           </DialogTrigger>
         </DropdownMenuContent>

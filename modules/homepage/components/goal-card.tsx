@@ -1,4 +1,3 @@
-import GoalsActionsDropdownMenu from "./goals-actions-dropdown-menu";
 import {
   Card,
   CardHeader,
@@ -8,34 +7,37 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatCurrency } from "@/lib/utils";
+import GoalsActionsDropdownMenu from "@/modules/homepage/components/goals-actions-dropdown-menu";
 import { useFormAction } from "@/modules/homepage/use-form-action";
 
 type Props = {
-  goal: Awaited<ReturnType<typeof useFormAction>>["buckets"][number];
+  bucket: Awaited<ReturnType<typeof useFormAction>>["buckets"][number];
 };
 
-export default function GoalCard({ goal }: Props) {
+export default function GoalCard({ bucket }: Props) {
   const progressPercentage = Number(
     (
-      (Number(goal.totalAmount) / Number(goal.goal?.targetAmount ?? 0)) *
+      (Number(bucket.totalAmount) / Number(bucket.goal?.targetAmount ?? 0)) *
       100
     ).toFixed(0),
   );
 
-  return goal.goal ? (
+  if (!bucket.goal) return null;
+
+  return (
     <Card className="relative flex flex-col justify-between">
-      <GoalsActionsDropdownMenu bucketId={goal.goal.bucketId} />
+      <GoalsActionsDropdownMenu bucketId={bucket.id} goalId={bucket.goal.id} />
       <CardHeader>
-        <CardTitle className="uppercase">{goal.name}</CardTitle>
+        <CardTitle className="uppercase">{bucket.name}</CardTitle>
         <CardDescription className="whitespace-break-spaces">
-          {goal.description}
+          {bucket.description}
         </CardDescription>
       </CardHeader>
       <CardFooter className="grid gap-y-1">
         <div className="flex items-center justify-between">
-          <strong>{formatCurrency(goal.totalAmount)}</strong>
+          <strong>{formatCurrency(bucket.totalAmount)}</strong>
           <span className="text-sm text-muted-foreground">
-            of {formatCurrency(goal.goal?.targetAmount ?? "0")}
+            of {formatCurrency(bucket.goal.targetAmount ?? "0")}
           </span>
         </div>
         <Progress value={progressPercentage} />
@@ -44,5 +46,5 @@ export default function GoalCard({ goal }: Props) {
         </small>
       </CardFooter>
     </Card>
-  ) : null;
+  );
 }

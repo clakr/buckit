@@ -16,7 +16,7 @@ import { useState } from "react";
 import { z } from "zod";
 
 type Props = {
-  bucketId: z.infer<typeof createTransactionSchema>["bucketId"];
+  bucketId: number;
 };
 
 export default function CreateTransactionsDialog({ bucketId }: Props) {

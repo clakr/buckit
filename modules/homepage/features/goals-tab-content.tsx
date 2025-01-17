@@ -14,7 +14,7 @@ export default function GoalsTabContent() {
     <TabsContent value="goals" className="grid gap-y-8">
       <section className="grid auto-rows-fr grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
         {goals.map((goal) => (
-          <GoalCard key={goal.id} goal={goal} />
+          <GoalCard key={goal.id} bucket={goal} />
         ))}
       </section>
 

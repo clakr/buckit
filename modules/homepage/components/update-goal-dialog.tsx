@@ -8,11 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  createBucketGoalSchema,
-  updateBucketGoalSchema,
-  updateGoalSchema,
-} from "@/database/schema";
+import { updateBucketGoalSchema } from "@/database/schema";
 import FieldErrors from "@/modules/homepage/components/field-errors";
 import { useFormAction } from "@/modules/homepage/use-form-action";
 import { useState } from "react";
@@ -36,7 +32,6 @@ export default function UpdateGoalDialog({ bucketId }: Props) {
     );
 
     if (!success) {
-      console.log(error.flatten());
       setErrors(error.flatten());
       return;
     }
