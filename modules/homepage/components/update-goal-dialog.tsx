@@ -95,6 +95,7 @@ export default function UpdateGoalDialog({ bucketId }: Props) {
             id="totalAmount"
             className="group-has-[ul]:border-destructive"
             defaultValue={goal.totalAmount}
+            step="0.01"
           />
           <FieldErrors errors={errors?.fieldErrors.totalAmount} />
         </div>
@@ -111,6 +112,7 @@ export default function UpdateGoalDialog({ bucketId }: Props) {
             id="targetAmount"
             className="group-has-[ul]:border-destructive"
             defaultValue={goal.goal.targetAmount}
+            step="0.01"
           />
           <FieldErrors errors={errors?.fieldErrors.targetAmount} />
         </div>

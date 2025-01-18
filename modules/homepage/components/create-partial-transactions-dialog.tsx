@@ -223,6 +223,7 @@ export default function CreatePartialTransactionsDialog() {
             id="baseAmount"
             className="group-has-[ul]:border-destructive"
             value={form.baseAmount}
+            step="0.01"
             onChange={handleChange}
           />
           <FieldErrors errors={errors?.fieldErrors.baseAmount} />
@@ -295,6 +296,7 @@ export default function CreatePartialTransactionsDialog() {
                     id={`amount-${index}`}
                     placeholder="Amount"
                     value={partial.amount}
+                    step="0.01"
                     onChange={(event) =>
                       handlePartialChange({
                         index,

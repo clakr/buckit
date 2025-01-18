@@ -77,6 +77,7 @@ export default function CreateGoalDialog() {
             name="totalAmount"
             id="initialAmount"
             className="group-has-[ul]:border-destructive"
+            step="0.01"
           />
           <FieldErrors errors={errors?.fieldErrors.totalAmount} />
         </div>
@@ -92,6 +93,7 @@ export default function CreateGoalDialog() {
             name="targetAmount"
             id="targetAmount"
             className="group-has-[ul]:border-destructive"
+            step="0.01"
           />
           <FieldErrors errors={errors?.fieldErrors.targetAmount} />
         </div>

@@ -10,7 +10,7 @@ import { createTransactionSchema } from "@/database/schema";
 import ConvertBucketToGoal from "@/modules/homepage/components/convert-bucket-to-goal-dialog";
 import CreateTransactionsDialog from "@/modules/homepage/components/create-transactions-dialog";
 import UpdateBucketDialog from "@/modules/homepage/components/update-bucket-dialog";
-import { FileText, MoreVertical, Pencil, PiggyBank } from "lucide-react";
+import { FileText, Goal, MoreVertical, Pencil } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -69,7 +69,7 @@ export default function BucketsActionsDropdownMenu({ bucketId }: Props) {
             asChild
           >
             <DropdownMenuItem>
-              <PiggyBank />
+              <Goal />
               Convert To Goal
             </DropdownMenuItem>
           </DialogTrigger>

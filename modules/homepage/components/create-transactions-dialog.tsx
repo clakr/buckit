@@ -72,6 +72,7 @@ export default function CreateTransactionsDialog({ bucketId }: Props) {
             name="amount"
             id="amount"
             className="group-has-[ul]:border-destructive"
+            step="0.01"
           />
           <FieldErrors errors={errors?.fieldErrors.amount} />
         </div>
