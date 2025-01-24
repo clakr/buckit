@@ -336,7 +336,7 @@ export default function CreatePartialTransactionsDialog() {
         <Button
           type="submit"
           form="createPartialTransactionsForm"
-          disabled={remainingBaseAmount <= 0}
+          disabled={remainingBaseAmount < 0}
         >
           Create
         </Button>
